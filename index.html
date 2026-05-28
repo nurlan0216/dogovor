@@ -511,22 +511,10 @@ async function generatePDF() {
       }
     }
 
-    // ── Telegram напрямую из браузера (надёжнее) ────────────────────────────
-    setProgress(88, 'Отправляем уведомление...');
-    const tgText =
-      "📋 *НОВЫЙ ДОГОВОР — Business School Amanat*\n\n" +
-      "👤 *ФИО:* "     + (d.fio      || "—") + "\n" +
-      "🆔 *ИИН:* "     + (d.iin      || "—") + "\n" +
-      "📍 *Адрес:* "   + (d.address  || "—") + "\n" +
-      "📞 *Телефон:* " + (d.phone    || "—") + "\n" +
-      "📧 *Email:* "   + (d.email    || "—") + "\n" +
-      "💰 *Сумма:* "   + (d.amount   || "—") + "\n" +
-      "📅 *Дата:* "    + today                + "\n" +
-      "🔖 *№:* "       + contractNo           + "\n" +
-      (driveUrl ? "🔗 *Drive:* " + driveUrl : "📂 _Drive: сохранено_");
-    await sendTelegramMessage(tgText);
-
-    setProgress(90, '✅ Уведомление отправлено!');
+    // ── Telegram отправляет Apps Script со ссылкой на Drive ─────────────────
+    // Apps Script внутри handleUploadPdf вызывает sendTextToTelegram(tgCaption)
+    // где tgCaption содержит driveUrl. Браузер не дублирует.
+    setProgress(90, serverOk ? '✅ Уведомление отправлено!' : '⚠️ Файл сохранён локально');
     await new Promise(r => setTimeout(r, 600));
 
     // ── Теперь скачиваем PDF клиенту ─────────────────────────────────────────
