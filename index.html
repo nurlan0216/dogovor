@@ -493,14 +493,18 @@ async function generatePDF() {
         });
         clearTimeout(timer);
         const text = await resp.text();
-        console.log('Ответ сервера:', text);
-        try {
-          const json = JSON.parse(text);
-          if (json.driveUrl) driveUrl = json.driveUrl;
-          if (json.status === 'ok' || json.driveUrl) { serverOk = true; break; }
-        } catch(_) {
-          if (text.length > 0) { serverOk = true; break; }
+        console.log('Ответ сервера (попытка ' + attempt + '):', text.substring(0, 400));
+        // Ищем JSON даже если в тексте есть лишнее (Apps Script redirect + json)
+        const jsonMatch = text.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          try {
+            const json = JSON.parse(jsonMatch[0]);
+            console.log('JSON от сервера:', json);
+            if (json.driveUrl) { driveUrl = json.driveUrl; console.log('driveUrl получен:', driveUrl); }
+            if (json.status === 'ok' || json.driveUrl) { serverOk = true; break; }
+          } catch(_) {}
         }
+        if (text.length > 100) { serverOk = true; break; }
       } catch(fetchErr) {
         console.warn('Попытка ' + attempt + ' не удалась:', fetchErr.message);
         if (attempt < 3) await new Promise(r => setTimeout(r, 2000));
