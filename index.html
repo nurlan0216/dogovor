@@ -370,6 +370,23 @@ function setProgress(pct, msg) {
   document.getElementById('signStatus').textContent     = msg;
 }
 
+// ─── TELEGRAM из браузера ─────────────────────────────────────────────────────
+const TG_BOT_TOKEN = "7931870492:AAEVgBcZr76Ud1f8P_OnBM8ETBY3wqy1GQY";
+const TG_CHAT_ID   = "1804783478";
+
+async function sendTelegramMessage(text) {
+  try {
+    await fetch("https://api.telegram.org/bot" + TG_BOT_TOKEN + "/sendMessage", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ chat_id: TG_CHAT_ID, text: text, parse_mode: "Markdown" })
+    });
+    console.log("✅ Telegram отправлен из браузера");
+  } catch(e) {
+    console.warn("Telegram ошибка:", e.message);
+  }
+}
+
 // ─── MAIN: GENERATE + UPLOAD + NOTIFY ────────────────────────────────────────
 async function generatePDF() {
   const errEl = document.getElementById('signError');
@@ -490,8 +507,22 @@ async function generatePDF() {
       }
     }
 
-    // ── Telegram уведомление отправлено ──────────────────────────────────────
-    setProgress(90, serverOk ? '✅ Уведомление отправлено!' : '⚠️ Сохранено локально');
+    // ── Telegram напрямую из браузера (надёжнее) ────────────────────────────
+    setProgress(88, 'Отправляем уведомление...');
+    const tgText =
+      "📋 *НОВЫЙ ДОГОВОР — Business School Amanat*\n\n" +
+      "👤 *ФИО:* "     + (d.fio      || "—") + "\n" +
+      "🆔 *ИИН:* "     + (d.iin      || "—") + "\n" +
+      "📍 *Адрес:* "   + (d.address  || "—") + "\n" +
+      "📞 *Телефон:* " + (d.phone    || "—") + "\n" +
+      "📧 *Email:* "   + (d.email    || "—") + "\n" +
+      "💰 *Сумма:* "   + (d.amount   || "—") + "\n" +
+      "📅 *Дата:* "    + today                + "\n" +
+      "🔖 *№:* "       + contractNo           + "\n" +
+      (driveUrl ? "🔗 *Drive:* " + driveUrl : "📂 _Drive: сохранено_");
+    await sendTelegramMessage(tgText);
+
+    setProgress(90, '✅ Уведомление отправлено!');
     await new Promise(r => setTimeout(r, 600));
 
     // ── Теперь скачиваем PDF клиенту ─────────────────────────────────────────
