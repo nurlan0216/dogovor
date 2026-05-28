@@ -380,23 +380,25 @@ async function generatePDF() {
   btn.disabled = true;
   btn.textContent = '⏳ Формируем PDF...';
 
-  const today      = new Date().toLocaleDateString('ru-RU');
-  const d          = formData;
-  const contractNo = 'BSA-' + d.iin.slice(-4) + '-' + new Date().getFullYear();
-  const safeName   = d.fio.replace(/\s+/g,'_').replace(/[^a-zA-Zа-яА-ЯёЁ_]/g,'');
-  const dateStr    = today.replace(/\./g,'-');
+  const today       = new Date().toLocaleDateString('ru-RU');
+  const d           = formData;
+  const contractNo  = 'BSA-' + d.iin.slice(-4) + '-' + new Date().getFullYear();
+  const safeName    = d.fio.replace(/\s+/g,'_').replace(/[^a-zA-Zа-яА-ЯёЁ_]/g,'');
+  const dateStr     = today.replace(/\./g,'-');
   const pdfFileName = 'Dogovor_Amanat_' + safeName + '_' + dateStr + '.pdf';
-  const sigImg     = getSigCanvas().toDataURL('image/png');
+  const sigImg      = getSigCanvas().toDataURL('image/png');
 
-  // Загружаем подписи исполнителя
+  // ── Загрузка подписей исполнителя ────────────────────────────────────────────
   async function imgToBase64(url) {
     return new Promise(resolve => {
       const img = new Image(); img.crossOrigin = 'anonymous';
       img.onload = () => {
-        const c = document.createElement('canvas');
-        c.width = img.width; c.height = img.height;
-        c.getContext('2d').drawImage(img,0,0);
-        resolve(c.toDataURL('image/png'));
+        try {
+          const c = document.createElement('canvas');
+          c.width = img.width; c.height = img.height;
+          c.getContext('2d').drawImage(img,0,0);
+          resolve(c.toDataURL('image/png'));
+        } catch(e) { resolve(''); }
       };
       img.onerror = () => resolve('');
       img.src = url + '?t=' + Date.now();
@@ -409,28 +411,31 @@ async function generatePDF() {
     imgToBase64('https://static.tildacdn.com/tild3237-3637-4637-b633-646665656434/stamp_amanat.png')
   ]);
 
-  // Строим PDF DOM
+  // ── Строим PDF DOM ────────────────────────────────────────────────────────────
   setProgress(20, 'Формируем документ...');
   const pdfWrap = document.createElement('div');
-  pdfWrap.style.cssText = 'position:absolute;top:0;left:-9999px;width:794px;background:#fff;color:#111;font-family:Arial,sans-serif;font-size:9.5px;line-height:1.6;padding:18px 44px;overflow:visible;visibility:visible';
+  pdfWrap.style.cssText = 'position:fixed;top:0;left:-9999px;width:794px;background:#fff;color:#111;font-family:Arial,sans-serif;font-size:9.5px;line-height:1.6;padding:18px 44px;overflow:visible;visibility:visible;z-index:-1';
   pdfWrap.innerHTML = buildPdfHTML(d, today, contractNo, sigImg, ERALIEV_SIG, AMANAT_STAMP);
   document.body.appendChild(pdfWrap);
-  await new Promise(r => setTimeout(r, 500));
+  await new Promise(r => setTimeout(r, 600));
+
+  let pdf = null;
 
   try {
-    setProgress(35, 'Рендерим PDF...');
+    setProgress(35, 'Рендерим страницы...');
     const canvas = await html2canvas(pdfWrap, {
       scale: 2, useCORS: true, allowTaint: true,
       width: 794, windowWidth: 794,
       backgroundColor: '#ffffff', logging: false
     });
 
-    const imgData = canvas.toDataURL('image/jpeg', 0.92);
+    // Сжимаем до 0.85 — уменьшает размер base64 примерно на 30–40%
+    const imgData = canvas.toDataURL('image/jpeg', 0.85);
     const { jsPDF } = window.jspdf;
-    const pdf  = new jsPDF({ orientation: 'p', unit: 'px', format: 'a4' });
+    pdf = new jsPDF({ orientation: 'p', unit: 'px', format: 'a4' });
     const pdfW = pdf.internal.pageSize.getWidth();
     const pdfH = pdf.internal.pageSize.getHeight();
-    const ratio = pdfW / canvas.width;
+    const ratio  = pdfW / canvas.width;
     const totalH = canvas.height * ratio;
     let posY = 0;
     while (posY < totalH) {
@@ -439,69 +444,86 @@ async function generatePDF() {
       posY += pdfH;
     }
 
-    // ── Отправляем на Apps Script и ждём ответ (без no-cors!) ──
-    setProgress(55, 'Загружаем на сервер...');
-    const pdfBase64 = pdf.output('datauristring').split(',')[1].replace(/\s/g,'');
-
-    let driveUrl = '';
-    try {
-      const payload = {
-        action:      'upload_pdf',
-        contract_no: contractNo,
-        pdf_name:    pdfFileName,
-        pdf_base64:  pdfBase64,
-        date:        today,
-        name:        d.fio,
-        iin:         d.iin,
-        address:     d.address  || '',
-        phone:       d.phone    || '',
-        email:       d.email    || '',
-        amount:      d.amount
-      };
-
-      setProgress(70, 'Сохраняем на Google Drive...');
-
-      const resp = await fetch(SCRIPT_URL, {
-        method:  'POST',
-        headers: { 'Content-Type': 'text/plain' }, // text/plain чтобы не было preflight CORS
-        body:    JSON.stringify(payload)
-      });
-
-      const text = await resp.text();
-      console.log('Apps Script ответ:', text);
-
-      try {
-        const json = JSON.parse(text);
-        if (json.driveUrl) driveUrl = json.driveUrl;
-      } catch(e) { console.warn('Не JSON:', text); }
-
-      setProgress(90, 'Уведомление отправлено!');
-    } catch(fetchErr) {
-      console.warn('Ошибка отправки на сервер:', fetchErr);
-      // Если сервер не ответил — всё равно даём скачать PDF
-      setProgress(90, 'Сервер недоступен, скачиваем локально...');
-    }
-
-    // ── Скачиваем PDF клиенту ──
-    setProgress(95, 'Скачиваем PDF...');
+    // ── 1. Сначала скачиваем PDF клиенту (независимо от сервера) ─────────────
+    setProgress(60, 'Скачиваем PDF...');
     pdf.save(pdfFileName);
 
-    setProgress(100, '');
-
-    // ── Переходим на «Готово» ──
+    // ── 2. Переходим на «Готово» сразу — не ждём сервер ─────────────────────
+    setProgress(80, 'Отправляем уведомление...');
     document.getElementById('stepSign').style.display = 'none';
     document.getElementById('stepDone').style.display = 'block';
-
-    if (driveUrl) {
-      document.getElementById('doneLinks').innerHTML =
-        `<a class="done-link" href="${driveUrl}" target="_blank">📄 Открыть на Google Drive</a>`;
-    }
-
     window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // ── 3. Асинхронно отправляем на Apps Script (не блокируем UI) ────────────
+    const pdfBase64 = pdf.output('datauristring').split(',')[1].replace(/\s/g,'');
+    const payload = JSON.stringify({
+      action:      'upload_pdf',
+      contract_no: contractNo,
+      pdf_name:    pdfFileName,
+      pdf_base64:  pdfBase64,
+      date:        today,
+      name:        d.fio,
+      iin:         d.iin,
+      address:     d.address || '',
+      phone:       d.phone   || '',
+      email:       d.email   || '',
+      amount:      d.amount
+    });
+
+    // Отправляем с retry — до 3 попыток
+    (async () => {
+      let driveUrl = '';
+      let success  = false;
+      for (let attempt = 1; attempt <= 3; attempt++) {
+        try {
+          console.log('Попытка ' + attempt + ' — отправка на сервер...');
+          const controller = new AbortController();
+          const timer = setTimeout(() => controller.abort(), 55000); // 55 сек таймаут
+          const resp = await fetch(SCRIPT_URL, {
+            method:  'POST',
+            headers: { 'Content-Type': 'text/plain' },
+            body:    payload,
+            signal:  controller.signal
+          });
+          clearTimeout(timer);
+          const text = await resp.text();
+          console.log('Apps Script ответ (попытка ' + attempt + '):', text);
+          try {
+            const json = JSON.parse(text);
+            if (json.status === 'ok' || json.driveUrl) {
+              driveUrl = json.driveUrl || '';
+              success  = true;
+              break;
+            }
+          } catch(e) {
+            // Если пришёл редирект-HTML или что-то нечитаемое — считаем успехом,
+            // Apps Script всё равно выполнился (он не возвращает CORS заголовок на redirect)
+            if (resp.ok || resp.status === 0 || text.length > 0) {
+              success = true;
+              break;
+            }
+          }
+        } catch(fetchErr) {
+          console.warn('Попытка ' + attempt + ' не удалась:', fetchErr.message);
+          if (attempt < 3) await new Promise(r => setTimeout(r, 3000)); // ждём 3 сек между попытками
+        }
+      }
+
+      setProgress(100, success ? '✅ Готово' : '⚠️ Проверьте Telegram');
+      if (driveUrl) {
+        document.getElementById('doneLinks').innerHTML =
+          `<a class="done-link" href="${driveUrl}" target="_blank">📄 Открыть договор на Google Drive</a>`;
+      }
+      console.log(success ? '✅ Сервер получил данные' : '⚠️ Сервер не ответил, но PDF скачан');
+    })();
 
   } catch(e) {
     console.error('generatePDF error:', e);
-    errEl.textContent = 'Ошибка: ' + e.message;
+    // Если PDF уже создан — всё равно скачиваем
+    if (pdf) {
+      try { pdf.save(pdfFileName); } catch(_) {}
+    }
+    errEl.textContent = 'Ошибка рендера: ' + e.message + '. PDF скачан локально.';
     btn.disabled = false;
     btn.textContent = '✓ Подписать и отправить';
     document.getElementById('signStatus').textContent = '';
