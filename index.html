@@ -443,7 +443,7 @@ async function generatePDF() {
     }
 
     // ── Отправляем на сервер — ЖДЁМ пока не загрузится ───────────────────────
-    setProgress(60, 'Сохраняем на Google Drive...');
+    setProgress(50, 'Отправляем на Google Drive...');
     const pdfBase64 = pdf.output('datauristring').split(',')[1].replace(/\s/g,'');
     const payload = JSON.stringify({
       action:      'upload_pdf',
@@ -464,10 +464,10 @@ async function generatePDF() {
 
     for (let attempt = 1; attempt <= 3; attempt++) {
       try {
-        setProgress(60 + attempt * 7, attempt === 1 ? 'Сохраняем на Google Drive...' : 'Повторная попытка ' + attempt + '...');
+        setProgress(50 + attempt * 12, attempt === 1 ? 'Сохраняем на Google Drive...' : 'Повторная попытка ' + attempt + '...');
         console.log('Попытка ' + attempt);
         const controller = new AbortController();
-        const timer = setTimeout(() => controller.abort(), 58000);
+        const timer = setTimeout(() => controller.abort(), 90000);
         const resp = await fetch(SCRIPT_URL, {
           method:  'POST',
           headers: { 'Content-Type': 'text/plain' },
