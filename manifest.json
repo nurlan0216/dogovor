@@ -1,0 +1,22 @@
+{
+  "id": "/dogovor/",
+  "name": "Договор — Электромонтаж и Видеонаблюдение",
+  "short_name": "Договор",
+  "description": "Онлайн-договор на электромонтажные работы и видеонаблюдение: заполнение формы, подпись, отправка на подтверждение и проверка статуса по номеру договора.",
+  "start_url": "./?pwa=1",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "portrait-primary",
+  "background_color": "#14171c",
+  "theme_color": "#14171c",
+  "lang": "ru",
+  "dir": "ltr",
+  "categories": ["business", "utilities"],
+  "icons": [
+    { "src": "icons/icon-client-any-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-client-any-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-client-maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "icons/icon-client-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

@@ -1,0 +1,883 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Электрика · Видеонаблюдение · IT — мастер в Алматы</title>
+<meta name="description" content="Электромонтаж, видеонаблюдение, настройка интернета, ремонт компьютеров, программирование и сайты. Прайс-лист, расчёт стоимости онлайн, договор онлайн.">
+<meta name="theme-color" content="#14171c">
+<style>
+:root{
+  --bg:#14171c;--bg2:#0f1115;--surface:#1c2027;--surface2:#242a33;
+  --border:#2b313c;--border2:#3a4150;
+  --text:#eef1f5;--mid:#9aa4b2;
+  --accent:#00d4ff;--accent-dim:rgba(0,212,255,.16);--accent-soft:rgba(0,212,255,.45);
+  --spark:#ffd60a;--green:#3ddc84;--red:#ff5c5c;--wa:#25D366;
+  --r:12px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Segoe UI',Arial,sans-serif;color:var(--text);
+  background:
+    radial-gradient(1100px 520px at 12% -8%, rgba(0,212,255,.10), transparent 60%),
+    radial-gradient(900px 460px at 100% 0%, rgba(255,214,10,.06), transparent 55%),
+    var(--bg);
+  min-height:100vh;overflow-x:hidden;
+}
+a{color:inherit}
+::selection{background:var(--accent);color:#08141a}
+.ic{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;flex:none;vertical-align:-4px}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+.mid{color:var(--mid)}
+.section{padding:64px 0}
+.section-h{text-align:center;max-width:640px;margin:0 auto 40px}
+.section-h .eyebrow{display:inline-flex;align-items:center;gap:6px;color:var(--accent);font-weight:700;
+  font-size:12.5px;letter-spacing:.06em;text-transform:uppercase;background:var(--accent-dim);
+  border:1px solid var(--accent-soft);padding:5px 13px;border-radius:20px;margin-bottom:14px}
+.section-h h2{font-size:28px;margin-bottom:10px}
+.section-h p{color:var(--mid);font-size:14.5px;line-height:1.6}
+/* reveal-on-scroll animation */
+.reveal{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s ease}
+.reveal.in{opacity:1;transform:none}
+
+/* ─── NAV ─── */
+header{position:sticky;top:0;z-index:999;background:rgba(15,17,21,.85);backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--border)}
+.navrow{display:flex;align-items:center;gap:18px;padding:13px 0}
+.brand{display:flex;align-items:center;gap:9px;font-weight:800;font-size:16px;white-space:nowrap}
+.brand .dot{width:10px;height:10px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent-soft);
+  animation:pulseDot 2.2s ease-in-out infinite}
+@keyframes pulseDot{0%,100%{opacity:1}50%{opacity:.35}}
+nav{display:flex;gap:4px;overflow-x:auto;flex:1;scrollbar-width:none}
+nav::-webkit-scrollbar{display:none}
+nav a{white-space:nowrap;padding:8px 13px;border-radius:20px;font-size:13px;font-weight:600;color:var(--mid);
+  transition:.15s;text-decoration:none}
+nav a:hover{background:var(--surface2);color:var(--text)}
+.navcta{display:flex;gap:8px;flex:none}
+/* ─── BUTTONS ─── */
+button,.btn{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  padding:11px 19px;border:0;border-radius:var(--r);cursor:pointer;font-size:13.5px;font-weight:700;
+  transition:.15s;color:var(--text);text-decoration:none}
+.bp{background:var(--accent);color:#07161c}
+.bp:hover,.bp:focus-visible{animation:spark 1.1s ease-in-out infinite}
+.bs{background:var(--surface2);color:var(--text);border:1px solid var(--border2)}
+.bs:hover{background:#2c333e;border-color:var(--accent)}
+.bg{background:var(--green);color:#06241a}
+.bg:hover{filter:brightness(1.08)}
+.bw{background:var(--wa);color:#062018}
+.bw:hover{filter:brightness(1.08)}
+button:disabled{opacity:.4;cursor:not-allowed;animation:none!important}
+@keyframes spark{0%,100%{box-shadow:0 0 0 0 var(--accent-soft)}50%{box-shadow:0 0 14px 3px var(--accent-soft)}}
+.btnsm{padding:7px 12px;font-size:12px;border-radius:9px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ─── HERO ─── */
+.hero{padding:60px 0 50px;display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center}
+.hero h1{font-size:36px;line-height:1.18;margin-bottom:16px}
+.hero h1 span{color:var(--accent)}
+.hero p{color:var(--mid);font-size:15px;line-height:1.65;margin-bottom:26px;max-width:520px}
+.herobtns{display:flex;gap:10px;flex-wrap:wrap}
+.herostats{display:flex;gap:22px;margin-top:30px;flex-wrap:wrap}
+.herostats div{font-size:22px;font-weight:800;color:var(--accent)}
+.herostats span{display:block;font-size:12px;color:var(--mid);font-weight:600;margin-top:2px}
+/* orbit visual */
+.orbit-wrap{position:relative;width:100%;aspect-ratio:1/1;max-width:420px;margin:0 auto}
+.orbit-core{position:absolute;inset:34%;border-radius:50%;background:radial-gradient(circle at 35% 30%,#1f2530,#0c0e12);
+  border:1.5px solid var(--border2);display:flex;align-items:center;justify-content:center;
+  box-shadow:0 0 50px rgba(0,212,255,.18), inset 0 0 30px rgba(0,0,0,.5)}
+.orbit-core svg{width:46%;height:46%;color:var(--accent);filter:drop-shadow(0 0 10px var(--accent-soft));
+  animation:corePulse 2.4s ease-in-out infinite}
+@keyframes corePulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.75;transform:scale(.93)}}
+.orbit-ring{position:absolute;inset:8%;border:1.5px dashed var(--border2);border-radius:50%;
+  animation:spin 34s linear infinite}
+.orbit-ring2{position:absolute;inset:0;border:1px dashed rgba(255,255,255,.06);border-radius:50%;
+  animation:spinRev 50s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes spinRev{to{transform:rotate(-360deg)}}
+.orbit-item{position:absolute;width:52px;height:52px;border-radius:50%;background:var(--surface);
+  border:1.5px solid var(--border2);display:flex;align-items:center;justify-content:center;
+  box-shadow:0 6px 18px rgba(0,0,0,.4)}
+.orbit-item svg{width:22px;height:22px;color:var(--spark)}
+.orbit-item.o1{top:-4%;left:50%;transform:translateX(-50%)}
+.orbit-item.o2{top:22%;right:-6%}
+.orbit-item.o3{bottom:22%;right:-6%}
+.orbit-item.o4{bottom:-4%;left:50%;transform:translateX(-50%)}
+.orbit-item.o5{bottom:22%;left:-6%}
+.orbit-item.o6{top:22%;left:-6%}
+@media(max-width:880px){.hero{grid-template-columns:1fr;padding-top:30px}.orbit-wrap{max-width:300px}}
+
+/* ─── SKILLS ─── */
+.skills{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.skill{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px;transition:.2s}
+.skill:hover{border-color:var(--accent);transform:translateY(-3px);box-shadow:0 12px 30px rgba(0,0,0,.35)}
+.skill .si{width:46px;height:46px;border-radius:12px;background:var(--accent-dim);display:flex;align-items:center;
+  justify-content:center;margin-bottom:14px}
+.skill .si svg{width:24px;height:24px;color:var(--accent)}
+.skill h3{font-size:15.5px;margin-bottom:6px}
+.skill p{font-size:13px;color:var(--mid);line-height:1.55}
+@media(max-width:880px){.skills{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.skills{grid-template-columns:1fr}}
+
+/* ─── PORTFOLIO ─── */
+.pf-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.pf-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:.2s}
+.pf-card:hover{border-color:var(--accent);transform:translateY(-3px)}
+.pf-img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;background:var(--surface2)}
+.pf-empty{aspect-ratio:4/3;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;
+  color:var(--mid);background:linear-gradient(135deg,var(--surface2),var(--bg2))}
+.pf-empty svg{width:34px;height:34px;color:var(--border2)}
+.pf-body{padding:14px 16px}
+.pf-body h4{font-size:14.5px;margin-bottom:5px}
+.pf-body p{font-size:12.5px;color:var(--mid);line-height:1.5}
+@media(max-width:880px){.pf-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.pf-grid{grid-template-columns:1fr}}
+
+/* ─── PRICE / CALC ─── */
+.price-wrap{display:grid;grid-template-columns:1fr 1fr;gap:26px;align-items:start}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;
+  box-shadow:0 10px 40px rgba(0,0,0,.35)}
+.card h3{font-size:16px;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.card h3 svg{color:var(--accent)}
+.pricecat{margin-bottom:16px}
+.pricecat .cn{font-size:12px;font-weight:700;color:var(--spark);text-transform:uppercase;letter-spacing:.04em;
+  margin-bottom:8px}
+.priceline{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px dashed var(--border);
+  font-size:13.5px}
+.priceline:last-child{border-bottom:none}
+.priceline b{color:var(--accent);white-space:nowrap;font-weight:700}
+.pricenote{margin-top:10px;font-size:12px;color:var(--mid);line-height:1.5;border-left:3px solid var(--spark);
+  padding-left:10px}
+.f{margin-bottom:12px}
+.f label{display:block;font-size:12.5px;font-weight:600;color:var(--mid);margin-bottom:5px}
+.f input,.f select,.f textarea{width:100%;padding:10px 12px;border:1.5px solid var(--border2);border-radius:var(--r);
+  font-size:14px;background:var(--surface2);color:var(--text);transition:.15s;font-family:inherit}
+.f input:focus,.f select:focus,.f textarea:focus{outline:none;border-color:var(--accent);background:#1f2530;
+  box-shadow:0 0 0 3px var(--accent-dim)}
+.f textarea{min-height:80px;resize:vertical}
+.calcrow{display:grid;grid-template-columns:2fr 1fr auto;gap:8px;align-items:end;margin-bottom:14px}
+.calctbl{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:10px}
+.calctbl td{padding:7px 4px;border-bottom:1px solid var(--border)}
+.calctbl td.x{text-align:right;color:var(--mid);cursor:pointer;width:20px}
+.calctotal{display:flex;justify-content:space-between;align-items:center;padding:12px 0;font-size:16px;font-weight:800}
+.calctotal b{color:var(--accent);font-size:20px}
+.calcempty{font-size:13px;color:var(--mid);padding:10px 0}
+
+/* ─── TZ FORM ─── */
+.tz-wrap{display:grid;grid-template-columns:1fr 1fr;gap:26px}
+.filebox{border:1.5px dashed var(--border2);border-radius:var(--r);padding:16px;text-align:center;
+  font-size:12.5px;color:var(--mid);cursor:pointer;transition:.15s;position:relative}
+.filebox:hover{border-color:var(--accent);color:var(--text)}
+.filebox input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.filebox.has{border-color:var(--green);color:var(--green)}
+.charge{display:none;height:5px;border-radius:4px;background:var(--border);overflow:hidden;margin-top:10px}
+.charge.on{display:block}
+.charge i{display:block;height:100%;width:0;border-radius:4px;background:linear-gradient(90deg,var(--accent),var(--spark));
+  box-shadow:0 0 8px var(--accent-soft);animation:chargeFill .9s ease forwards}
+@keyframes chargeFill{from{width:0}to{width:100%}}
+.note{padding:11px 15px;border-radius:var(--r);font-size:13px;margin:12px 0 0;line-height:1.5;border:1px solid var(--border)}
+.n-y{background:rgba(255,214,10,.08);border-left:4px solid var(--spark)}
+.n-g{background:rgba(61,220,132,.08);border-left:4px solid var(--green)}
+.n-b{background:var(--accent-dim);border-left:4px solid var(--accent)}
+.n-r{background:rgba(255,92,92,.08);border-left:4px solid var(--red)}
+@media(max-width:880px){.tz-wrap,.price-wrap{grid-template-columns:1fr}}
+
+/* ─── REVIEWS ─── */
+.rev-wrap{display:grid;grid-template-columns:1.2fr .8fr;gap:26px;align-items:start}
+.rev-list{display:flex;flex-direction:column;gap:12px;max-height:520px;overflow:auto;padding-right:4px}
+.rev-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px 18px}
+.rev-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.rev-top b{font-size:14px}
+.stars{color:var(--spark);letter-spacing:2px;font-size:14px}
+.rev-card p{font-size:13.5px;color:var(--text);line-height:1.55}
+.rev-date{font-size:11.5px;color:var(--mid)}
+.starpick{display:flex;gap:6px;font-size:26px;cursor:pointer;margin-bottom:14px;color:var(--border2)}
+.starpick span.on{color:var(--spark)}
+@media(max-width:880px){.rev-wrap{grid-template-columns:1fr}}
+
+/* ─── FLOATING WHATSAPP ─── */
+.fab{position:fixed;right:20px;bottom:20px;z-index:900;width:58px;height:58px;border-radius:50%;
+  background:var(--wa);display:flex;align-items:center;justify-content:center;box-shadow:0 8px 26px rgba(37,211,102,.5);
+  animation:fabPulse 2.4s ease-in-out infinite;text-decoration:none}
+.fab svg{width:30px;height:30px;color:#fff}
+@keyframes fabPulse{0%,100%{box-shadow:0 8px 26px rgba(37,211,102,.5)}50%{box-shadow:0 8px 36px rgba(37,211,102,.85)}}
+
+/* ─── FOOTER ─── */
+footer{border-top:1px solid var(--border);padding:34px 0;margin-top:20px;background:var(--bg2)}
+.footrow{display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px;align-items:center;font-size:13px;color:var(--mid)}
+.footlinks{display:flex;gap:16px;flex-wrap:wrap}
+.footlinks a{text-decoration:none;color:var(--mid)}
+.footlinks a:hover{color:var(--accent)}
+/* ─── Задача 10: «Мои договора» ─── */
+.mcOverlay{display:none;position:fixed;inset:0;z-index:1500;background:rgba(10,12,16,.62);
+  align-items:flex-start;justify-content:center;padding:8vh 16px}
+.mcOverlay.on{display:flex}
+.mcModal{background:var(--surface);border:1px solid var(--border);border-radius:16px;max-width:560px;
+  width:100%;max-height:80vh;overflow-y:auto;padding:22px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.mcHead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
+.mcHead h3{font-size:17px}
+.mcClose{background:var(--surface2);border:1px solid var(--border2);border-radius:50%;width:32px;height:32px;
+  padding:0;font-size:16px;line-height:1;color:var(--mid)}
+.mcClose:hover{color:var(--text)}
+.mcItem{border:1px solid var(--border);border-radius:12px;padding:13px 15px;margin-bottom:10px;background:var(--surface2)}
+.mcItem .mcRow{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
+.mcItem .mcId{font-weight:700;font-size:14px}
+.mcItem .mcDate{color:var(--mid);font-size:12px}
+.mcItem .mcStatus{font-size:12.5px;font-weight:700;color:var(--accent);margin-top:4px}
+.mcItem .mcActions{display:flex;gap:7px;margin-top:10px;flex-wrap:wrap}
+.mcItem .mcActions .btn{padding:7px 12px;font-size:12.5px}
+.mcEmpty{color:var(--mid);font-size:13.5px;text-align:center;padding:20px 0}
+.mcClearBtn{margin-top:8px;width:100%;background:var(--surface2);border:1px solid var(--border2);color:var(--mid)}
+.mcClearBtn:hover{color:var(--red);border-color:var(--red)}
+</style>
+<link rel="stylesheet" href="site-mobile.css">
+<script src="site-language.js"></script>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<defs>
+  <symbol id="i-bolt" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z"/></symbol>
+  <symbol id="i-camera" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8h11l3-2h2v10h-2l-3-2H3z"/><circle cx="9" cy="12" r="2.2"/></symbol>
+  <symbol id="i-wifi" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2 8.5a15 15 0 0 1 20 0M5.5 12a10 10 0 0 1 13 0M9 15.5a5 5 0 0 1 6 0"/><circle cx="12" cy="19" r="1"/></symbol>
+  <symbol id="i-laptop" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="11" rx="1.3"/><path stroke-linecap="round" d="M2 19h20M9 19l1-2h4l1 2"/></symbol>
+  <symbol id="i-code" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m9 8-5 4 5 4M15 8l5 4-5 4"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path stroke-linecap="round" d="M3 12h18M12 3c2.5 2.5 4 5.7 4 9s-1.5 6.5-4 9c-2.5-2.5-4-5.7-4-9s1.5-6.5 4-9Z"/></symbol>
+  <symbol id="i-chat" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 12a8 8 0 1 1 3.5 6.6L4 20l1.4-3.5A7.96 7.96 0 0 1 4 12Z"/></symbol>
+  <symbol id="i-tag" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 2 3 11v3l8 8 10-10V2Z"/><circle cx="8" cy="8" r="1.4"/></symbol>
+  <symbol id="i-send" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 11 21 3l-8 18-3-7-7-3Z"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 2h9l5 5v15H6Z"/><path stroke-linecap="round" d="M14 2v6h6"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m12 2 3.1 6.6 7.1.9-5.3 4.9 1.4 7.1L12 17.9l-6.3 3.6 1.4-7.1L1.8 9.5l7.1-.9Z"/></symbol>
+  <symbol id="i-doc" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 3h10v18H7Z"/><path stroke-linecap="round" d="M9 8h6M9 12h6M9 16h4"/></symbol>
+  <symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="1.5"/><circle cx="8.5" cy="9.5" r="1.6"/><path stroke-linecap="round" stroke-linejoin="round" d="m4 17 5-5 4 4 3-3 4 4"/></symbol>
+</defs>
+</svg>
+
+<!-- ══════════ NAV ══════════ -->
+<header>
+  <div class="wrap navrow">
+    <div class="brand"><span class="dot"></span> <span id="cfgSiteName">Мастер | Электрика · Видео · IT</span></div>
+    <nav>
+      <a href="#about">О специалисте</a>
+      <a href="#portfolio">Портфолио</a>
+      <a href="#price">Прайс и расчёт</a>
+      <a href="#send-tz">Отправить ТЗ</a>
+      <a href="#reviews">Отзывы</a>
+    </nav>
+    <div class="navcta">
+      <a class="btn bw btnsm" id="navWaBtn" href="#" target="_blank" rel="noopener">
+        <svg class="ic" viewBox="0 0 24 24"><use href="#i-chat"/></svg> WhatsApp
+      </a>
+      <a class="btn bp btnsm" id="navContractBtn" href="contract.html">
+        <svg class="ic" viewBox="0 0 24 24"><use href="#i-doc"/></svg> Договор онлайн
+      </a>
+      <button class="btn bs btnsm" id="navMyContractsBtn" onclick="openMyContracts()">
+        <svg class="ic" viewBox="0 0 24 24"><use href="#i-doc"/></svg> Мои договора 📋
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- ══════════ Задача 10: «Мои договора» (модальное окно) ══════════ -->
+<div class="mcOverlay" id="mcOverlay" onclick="if(event.target===this)closeMyContracts()">
+  <div class="mcModal">
+    <div class="mcHead">
+      <h3>Мои договора</h3>
+      <button class="mcClose" onclick="closeMyContracts()">✕</button>
+    </div>
+    <div id="mcList"></div>
+    <button class="btn mcClearBtn" id="mcClearBtn" onclick="clearMyContracts()" style="display:none">Очистить историю</button>
+  </div>
+</div>
+
+<!-- ══════════ HERO (разделённый экран) ══════════ -->
+<section class="wrap hero">
+  <div class="reveal in">
+    <h1>Электрика, <span>видеонаблюдение</span> и IT под ключ — быстро, честно, с договором онлайн</h1>
+    <p>Электромонтаж и щиты, установка камер видеонаблюдения, настройка интернета и Wi-Fi, ремонт компьютеров и ноутбуков, программирование и сайты. Работаю в Алматы и области — с прозрачным расчётом стоимости и онлайн-договором на каждую работу.</p>
+    <div class="herobtns">
+      <a class="btn bp" href="#price"><svg class="ic" viewBox="0 0 24 24"><use href="#i-tag"/></svg>Рассчитать стоимость</a>
+      <a class="btn bw" id="heroWaBtn" href="#" target="_blank" rel="noopener"><svg class="ic" viewBox="0 0 24 24"><use href="#i-chat"/></svg>Написать в WhatsApp</a>
+      <a class="btn bs" href="#send-tz"><svg class="ic" viewBox="0 0 24 24"><use href="#i-send"/></svg>Отправить ТЗ / схему</a>
+    </div>
+    <div class="herostats">
+      <div>6<span>направлений работы</span></div>
+      <div>100%<span>онлайн-договор и чек</span></div>
+      <div>24ч<span>обычно отвечаю в WhatsApp</span></div>
+    </div>
+  </div>
+  <div class="orbit-wrap reveal in">
+    <div class="orbit-ring2"></div>
+    <div class="orbit-ring"></div>
+    <div class="orbit-core"><svg viewBox="0 0 24 24"><use href="#i-bolt"/></svg></div>
+    <div class="orbit-item o1"><svg class="ic" viewBox="0 0 24 24"><use href="#i-camera"/></svg></div>
+    <div class="orbit-item o2"><svg class="ic" viewBox="0 0 24 24"><use href="#i-wifi"/></svg></div>
+    <div class="orbit-item o3"><svg class="ic" viewBox="0 0 24 24"><use href="#i-code"/></svg></div>
+    <div class="orbit-item o4"><svg class="ic" viewBox="0 0 24 24"><use href="#i-laptop"/></svg></div>
+    <div class="orbit-item o5"><svg class="ic" viewBox="0 0 24 24"><use href="#i-globe"/></svg></div>
+    <div class="orbit-item o6"><svg class="ic" viewBox="0 0 24 24"><use href="#i-doc"/></svg></div>
+  </div>
+</section>
+
+<!-- ══════════ О СПЕЦИАЛИСТЕ / НАВЫКИ ══════════ -->
+<section class="section" id="about">
+  <div class="wrap">
+    <div class="section-h reveal">
+      <span class="eyebrow">О специалисте</span>
+      <h2>Что я делаю</h2>
+      <p>Одна команда — шесть направлений. Не нужно искать разных подрядчиков под каждую задачу.</p>
+    </div>
+    <div class="skills">
+      <div class="skill reveal"><div class="si"><svg viewBox="0 0 24 24"><use href="#i-laptop"/></svg></div>
+        <h3>Компьютеры и ноутбуки</h3><p>Диагностика, чистка от пыли, замена комплектующих, установка ОС и программ, ускорение работы системы.</p></div>
+      <div class="skill reveal"><div class="si"><svg viewBox="0 0 24 24"><use href="#i-code"/></svg></div>
+        <h3>Программирование</h3><p>Автоматизация рутинных задач, скрипты, боты и небольшие программы под конкретную задачу бизнеса.</p></div>
+      <div class="skill reveal"><div class="si"><svg viewBox="0 0 24 24"><use href="#i-camera"/></svg></div>
+        <h3>Видеонаблюдение</h3><p>Подбор и монтаж камер, настройка видеорегистратора, удалённый просмотр с телефона из любой точки.</p></div>
+      <div class="skill reveal"><div class="si"><svg viewBox="0 0 24 24"><use href="#i-wifi"/></svg></div>
+        <h3>Интернет и сети</h3><p>Прокладка кабеля, настройка роутеров и Wi-Fi, усиление сигнала, объединение сети на несколько этажей.</p></div>
+      <div class="skill reveal"><div class="si"><svg viewBox="0 0 24 24"><use href="#i-bolt"/></svg></div>
+        <h3>Электромонтаж</h3><p>Электрощиты, розетки и освещение, диагностика и ремонт проводки, монтаж «с нуля» и по готовому проекту.</p></div>
+      <div class="skill reveal"><div class="si"><svg viewBox="0 0 24 24"><use href="#i-globe"/></svg></div>
+        <h3>Сайты</h3><p>Создание и настройка сайтов и лендингов, интеграция форм заявок и оплаты под задачи бизнеса.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ ПОРТФОЛИО ══════════ -->
+<section class="section" id="portfolio" style="background:var(--bg2)">
+  <div class="wrap">
+    <div class="section-h reveal">
+      <span class="eyebrow">Портфолио</span>
+      <h2>Примеры выполненных работ</h2>
+      <p>Фото реальных объектов — обновляется по мере выполнения новых заказов.</p>
+    </div>
+    <div class="pf-grid reveal" id="pfGrid">
+      <!-- заполняется скриптом: реальные фото с сервера или пустые карточки-заглушки -->
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ ПРАЙС + КАЛЬКУЛЯТОР ══════════ -->
+<section class="section" id="price">
+  <div class="wrap">
+    <div class="section-h reveal">
+      <span class="eyebrow">Прайс-лист</span>
+      <h2>Стоимость работ и расчёт онлайн</h2>
+      <p>Цены ориентировочные — точная стоимость зависит от объёма и уточняется после осмотра объекта или по фото/схеме.</p>
+    </div>
+    <div class="price-wrap reveal">
+      <div class="card">
+        <h3><svg class="ic" viewBox="0 0 24 24"><use href="#i-tag"/></svg>Прайс-лист</h3>
+        <div id="priceListBox"></div>
+        <div class="pricenote">Цены указаны без учёта материалов, если не отмечено иное. Итоговая стоимость фиксируется в договоре до начала работ.</div>
+      </div>
+      <div class="card">
+        <h3><svg class="ic" viewBox="0 0 24 24"><use href="#i-bolt"/></svg>Калькулятор стоимости</h3>
+        <div class="calcrow">
+          <div class="f" style="margin-bottom:0"><label>Услуга</label><select id="calcService"></select></div>
+          <div class="f" style="margin-bottom:0"><label>Кол-во</label><input id="calcQty" type="number" min="1" value="1"></div>
+          <button class="bs btnsm" onclick="addCalcItem()"><svg class="ic" viewBox="0 0 24 24" style="width:15px;height:15px"><use href="#i-tag"/></svg>Добавить</button>
+        </div>
+        <table class="calctbl" id="calcTbl"><tbody></tbody></table>
+        <div class="calcempty" id="calcEmpty">Выберите услугу и добавьте в расчёт — стоимость посчитается автоматически.</div>
+        <div class="calctotal" id="calcTotalRow" style="display:none">Итого: <b id="calcTotal">0 ₸</b></div>
+        <div class="herobtns" style="margin-top:6px">
+          <a class="btn bw" id="calcWaBtn" href="#" target="_blank" rel="noopener"><svg class="ic" viewBox="0 0 24 24"><use href="#i-chat"/></svg>Отправить расчёт в WhatsApp</a>
+          <a class="btn bp" href="contract.html"><svg class="ic" viewBox="0 0 24 24"><use href="#i-doc"/></svg>Оформить договор</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ ОТПРАВИТЬ ТЗ / СХЕМУ ══════════ -->
+<section class="section" id="send-tz" style="background:var(--bg2)">
+  <div class="wrap">
+    <div class="section-h reveal">
+      <span class="eyebrow">Заявка</span>
+      <h2>Отправить ТЗ или схему проекта</h2>
+      <p>Опишите задачу и приложите файл (схему, план, фото объекта, ТЗ) — сообщение с вашими контактами и файлом придёт мне напрямую.</p>
+    </div>
+    <div class="tz-wrap reveal">
+      <div class="card">
+        <div class="f"><label>Ваше имя</label><input id="tzName" placeholder="Как к вам обращаться"></div>
+        <div class="f"><label>Номер WhatsApp</label><input id="tzWa" placeholder="+7 700 000-00-00"></div>
+        <div class="f"><label>Опишите задачу</label><textarea id="tzTask" placeholder="Что нужно сделать, адрес объекта, сроки..."></textarea></div>
+        <div class="f">
+          <label>Файл: ТЗ, схема или фото объекта (необязательно)</label>
+          <div class="filebox" id="tzFilebox">
+            <svg class="ic" viewBox="0 0 24 24" style="width:22px;height:22px;display:block;margin:0 auto 6px"><use href="#i-file"/></svg>
+            <span id="tzFileLabel">Нажмите, чтобы выбрать файл (PDF, изображение)</span>
+            <input type="file" id="tzFile" accept=".pdf,image/*">
+          </div>
+        </div>
+        <div class="herobtns">
+          <button class="bp" id="tzSendBtn" onclick="submitTzRequest()"><svg class="ic" viewBox="0 0 24 24"><use href="#i-send"/></svg>Отправить заявку</button>
+          <a class="btn bw" id="tzWaBtn" href="#" target="_blank" rel="noopener"><svg class="ic" viewBox="0 0 24 24"><use href="#i-chat"/></svg>Отправить через WhatsApp</a>
+        </div>
+        <div class="charge" id="tzCharge"><i></i></div>
+        <div class="note n-r" id="tzErr" style="display:none"></div>
+        <div class="note n-g" id="tzOk" style="display:none"></div>
+        <div class="note n-y">При отправке через WhatsApp сообщение с текстом откроется автоматически — файл нужно будет прикрепить в открывшемся чате вручную (браузер не может сделать это за вас).</div>
+      </div>
+      <div class="card">
+        <h3><svg class="ic" viewBox="0 0 24 24"><use href="#i-doc"/></svg>Как это работает</h3>
+        <div class="priceline"><span>1. Заполняете форму или пишете в WhatsApp</span></div>
+        <div class="priceline"><span>2. Я получаю заявку с вашими контактами и файлом</span></div>
+        <div class="priceline"><span>3. Отвечаю с уточнениями и предварительной стоимостью</span></div>
+        <div class="priceline"><span>4. Согласовываем детали и оформляем онлайн-договор</span></div>
+        <div class="pricenote">Все данные передаются напрямую мне и не публикуются на сайте.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ ОТЗЫВЫ ══════════ -->
+<section class="section" id="reviews">
+  <div class="wrap">
+    <div class="section-h reveal">
+      <span class="eyebrow">Отзывы</span>
+      <h2>Что говорят клиенты</h2>
+      <p>Реальные отзывы после публикации проходят проверку и появляются здесь для всех посетителей.</p>
+    </div>
+    <div class="rev-wrap reveal">
+      <div class="rev-list" id="revList">
+        <div class="calcempty">Отзывов пока нет — будьте первым, кто оставит отзыв!</div>
+      </div>
+      <div class="card">
+        <h3><svg class="ic" viewBox="0 0 24 24"><use href="#i-star"/></svg>Оставить отзыв</h3>
+        <div class="f"><label>Ваше имя</label><input id="revName" placeholder="Как подписать отзыв"></div>
+        <div class="f"><label>Оценка</label>
+          <div class="starpick" id="starPick">
+            <span data-v="1">★</span><span data-v="2">★</span><span data-v="3">★</span><span data-v="4">★</span><span data-v="5">★</span>
+          </div>
+        </div>
+        <div class="f"><label>Текст отзыва</label><textarea id="revText" placeholder="Как прошла работа, что понравилось..."></textarea></div>
+        <button class="bp" id="revSendBtn" onclick="submitReview()"><svg class="ic" viewBox="0 0 24 24"><use href="#i-send"/></svg>Отправить отзыв</button>
+        <div class="charge" id="revCharge"><i></i></div>
+        <div class="note n-r" id="revErr" style="display:none"></div>
+        <div class="note n-g" id="revOk" style="display:none"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<a class="fab" id="fabWaBtn" href="#" target="_blank" rel="noopener" aria-label="Написать в WhatsApp">
+  <svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2C6.48 2 2 6.48 2 12c0 1.86.5 3.6 1.36 5.1L2 22l5.06-1.33A9.93 9.93 0 0 0 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2zm0 18a8 8 0 0 1-4.09-1.13l-.29-.17-3.03.8.81-2.95-.19-.3A8 8 0 1 1 12 20zm4.4-5.9c-.24-.12-1.43-.7-1.65-.78-.22-.08-.38-.12-.54.12-.16.24-.62.78-.76.94-.14.16-.28.18-.52.06-.24-.12-1-.37-1.9-1.17-.7-.62-1.18-1.39-1.32-1.63-.14-.24-.01-.37.11-.49.11-.11.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.54-1.3-.74-1.78-.2-.47-.4-.4-.54-.41h-.46c-.16 0-.42.06-.64.3-.22.24-.84.82-.84 2s.86 2.32.98 2.48c.12.16 1.7 2.6 4.12 3.64.58.25 1.03.4 1.38.51.58.18 1.11.16 1.53.1.47-.07 1.43-.58 1.63-1.15.2-.56.2-1.04.14-1.15-.06-.1-.22-.16-.46-.28z"/></svg>
+</a>
+
+<footer>
+  <div class="wrap footrow">
+    <div>© <span id="footYear"></span> <span id="footSiteName">Мастер | Электрика · Видео · IT</span> · г. Алматы</div>
+    <div class="footlinks">
+      <a href="contract.html">Оформить договор онлайн</a>
+      <a href="#send-tz">Отправить ТЗ</a>
+      <a id="footWaBtn" href="#" target="_blank" rel="noopener">WhatsApp</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ══════════════════════════════════════════════════════════════
+   КОНФИГУРАЦИЯ — заполнить перед публикацией сайта
+══════════════════════════════════════════════════════════════ */
+const CONFIG = {
+  // Тот же Web App URL, что и в contract.html / admin.html (Code.gs, Этап 3).
+  WEB_APP_URL: 'https://script.google.com/macros/s/AKfycbynXXVVUey4Zrxh24QCKiXY6SLh9JrFVbE1XPYM7_gWFKca2VGH1AU1wakqITeZ7L_R/exec',
+  // Номер WhatsApp Исполнителя, только цифры с кодом страны (без +, пробелов).
+  WA_NUMBER: '77713791787',
+  // Название/бренд, показывается в шапке и подвале.
+  SITE_NAME: 'Мастер | Электрика · Видео · IT',
+  // Ссылка на страницу договора (contract.html). При выкладке на
+  // GitHub Pages в подпапку /dogovor/ измените на 'dogovor/'.
+  CONTRACT_URL: 'contract.html'
+};
+
+/* ══════════════════════════════════════════════════════════════
+   ПРАЙС-ЛИСТ — отредактируйте цены/позиции под реальный прайс.
+   Цены в тенге (₸), ориентировочные.
+══════════════════════════════════════════════════════════════ */
+const PRICE_LIST = [
+  { cat: 'Электромонтаж', items: [
+    { name: 'Установка розетки/выключателя', unit: 'шт.', price: 2000 },
+    { name: 'Монтаж электрощита (до 12 модулей)', unit: 'компл.', price: 35000 },
+    { name: 'Прокладка кабеля скрытая', unit: 'п.м', price: 1200 },
+    { name: 'Монтаж светильника/люстры', unit: 'шт.', price: 4000 },
+  ]},
+  { cat: 'Видеонаблюдение', items: [
+    { name: 'Установка камеры видеонаблюдения', unit: 'шт.', price: 12000 },
+    { name: 'Настройка видеорегистратора', unit: 'услуга', price: 15000 },
+    { name: 'Настройка удалённого просмотра с телефона', unit: 'услуга', price: 7000 },
+  ]},
+  { cat: 'Интернет и сети', items: [
+    { name: 'Настройка Wi-Fi роутера', unit: 'шт.', price: 6000 },
+    { name: 'Прокладка сетевого кабеля', unit: 'п.м', price: 900 },
+    { name: 'Обжим и тестирование сети', unit: 'точка', price: 2500 },
+  ]},
+  { cat: 'Компьютеры и IT', items: [
+    { name: 'Диагностика компьютера/ноутбука', unit: 'услуга', price: 5000 },
+    { name: 'Переустановка ОС и программ', unit: 'услуга', price: 8000 },
+    { name: 'Чистка от пыли + замена термопасты', unit: 'услуга', price: 7000 },
+    { name: 'Разработка простого сайта-визитки', unit: 'проект', price: 90000 },
+  ]},
+];
+
+/* ══════════════════════════════════════════════════════════════
+   БАЗОВЫЕ ХЕЛПЕРЫ
+══════════════════════════════════════════════════════════════ */
+const G = id => document.getElementById(id);
+const H = s => window.SiteLanguage ? SiteLanguage.t(s) : s;
+const HOME_I18N={kz:{from:'бастап',enquiry:'Сәлеметсіз бе! Сайттағы есеп бойынша жұмыс құнын нақтылағым келеді:',total:'Барлығы:',estimate:'(шамамен)',hello:'Сәлеметсіз бе! Қызметтер туралы білгім келеді.',ask:'Сәлеметсіз бе! Жұмыс құнын нақтылағым келеді.'},ru:{from:'от',enquiry:'Здравствуйте! Хочу уточнить стоимость по расчёту с сайта:',total:'Итого:',estimate:'(ориентировочно)',hello:'Здравствуйте! Хочу узнать подробнее об услугах.',ask:'Здравствуйте! Хочу уточнить стоимость работ.'},en:{from:'from',enquiry:'Hello! I would like to confirm this website estimate:',total:'Total:',estimate:'(estimate)',hello:'Hello! I would like to learn more about your services.',ask:'Hello! I would like a price estimate.'}};
+const HC=()=>HOME_I18N[window.SiteLanguage?.get()||'ru']||HOME_I18N.ru;
+const xe = s => String(s ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+const fmt = n => Number(n||0).toLocaleString('ru-RU') + ' ₸';
+const waConfigured = () => CONFIG.WA_NUMBER.indexOf('ВСТАВЬТЕ_') !== 0;
+const apiConfigured = () => CONFIG.WEB_APP_URL.indexOf('ВСТАВЬТЕ_') !== 0;
+function waLink(text){
+  const num = waConfigured() ? CONFIG.WA_NUMBER : '';
+  return `https://wa.me/${num}${text ? '?text=' + encodeURIComponent(text) : ''}`;
+}
+async function apiPost(body){
+  const res = await fetch(CONFIG.WEB_APP_URL, {method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify(body)});
+  return res.json();
+}
+async function apiGet(params){
+  const qs = new URLSearchParams(params).toString();
+  const res = await fetch(`${CONFIG.WEB_APP_URL}?${qs}`);
+  return res.json();
+}
+function fileToBase64(file){
+  return new Promise((resolve,reject)=>{
+    const r = new FileReader();
+    r.onload = () => resolve(String(r.result).split(',')[1]);
+    r.onerror = reject;
+    r.readAsDataURL(file);
+  });
+}
+
+/* ══════════════════════════════════════════════════════════════
+   ИНИЦИАЛИЗАЦИЯ ШАПКИ / КНОПОК WHATSAPP / ГОДА
+══════════════════════════════════════════════════════════════ */
+function initChrome(){
+  document.title = CONFIG.SITE_NAME + ' — электрика, видео, IT';
+  ['cfgSiteName','footSiteName'].forEach(id=>{ if(G(id)) G(id).textContent = CONFIG.SITE_NAME; });
+  const wa = waLink(HC().hello);
+  ['navWaBtn','heroWaBtn','fabWaBtn','footWaBtn'].forEach(id=>{ if(G(id)) G(id).href = wa; });
+  if(G('navContractBtn')) G('navContractBtn').href = CONFIG.CONTRACT_URL;
+  document.querySelectorAll('a[href="contract.html"]').forEach(a=> a.href = CONFIG.CONTRACT_URL);
+  G('footYear').textContent = new Date().getFullYear();
+  if(!waConfigured()){
+    document.querySelectorAll('#navWaBtn,#heroWaBtn,#fabWaBtn,#footWaBtn').forEach(a=>{
+      a.addEventListener('click', e=>{ e.preventDefault(); alert('Номер WhatsApp ещё не настроен на сайте (CONFIG.WA_NUMBER в home.html).'); });
+    });
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   ПОРТФОЛИО — реальные фото с сервера или пустые карточки-заглушки
+══════════════════════════════════════════════════════════════ */
+function pfImgFallback(img){
+  if(img.dataset.fallbackDone) return; // не даём повторно сработать и зациклиться
+  img.dataset.fallbackDone = '1';
+  const empty = document.createElement('div');
+  empty.className = 'pf-empty';
+  empty.innerHTML = `<svg viewBox="0 0 24 24"><use href="#i-image"/></svg><span>${xe(H('Фото недоступно'))}</span>`;
+  img.replaceWith(empty);
+}
+async function loadPortfolio(){
+  const grid = G('pfGrid');
+  let items = [];
+  if(apiConfigured()){
+    try{
+      const data = await apiGet({action:'portfolio'});
+      if(data.ok) items = data.items || [];
+    }catch(e){ /* тихо переходим на заглушки */ }
+  }
+  if(items.length){
+    grid.innerHTML = items.map(p => `
+      <div class="pf-card reveal in">
+        <img class="pf-img" src="${xe(p.photoUrl)}" alt="${xe(p.title)}" loading="lazy" referrerpolicy="no-referrer" onerror="pfImgFallback(this)">
+        <div class="pf-body"><h4>${xe(p.title)}</h4><p>${xe(p.desc||'')}</p></div>
+      </div>`).join('');
+  }else{
+    const placeholders = [
+      'Электромонтаж и электрощиты','Монтаж видеонаблюдения','Настройка сетей и интернета',
+      'Ремонт и настройка компьютеров','Сайты и автоматизация','Ваша будущая работа здесь'
+    ];
+    grid.innerHTML = placeholders.map(t => `
+      <div class="pf-card reveal in">
+        <div class="pf-empty"><svg viewBox="0 0 24 24"><use href="#i-image"/></svg><span>Фото появится после первой загрузки</span></div>
+        <div class="pf-body"><h4>${xe(t)}</h4><p>Примеры работ будут опубликованы здесь.</p></div>
+      </div>`).join('');
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   ПРАЙС-ЛИСТ + КАЛЬКУЛЯТОР
+══════════════════════════════════════════════════════════════ */
+function renderPriceList(){
+  G('priceListBox').innerHTML = PRICE_LIST.map(c => `
+    <div class="pricecat">
+      <div class="cn">${xe(H(c.cat))}</div>
+      ${c.items.map(i => `<div class="priceline"><span>${xe(H(i.name))}</span><b>${xe(HC().from)} ${fmt(i.price)} / ${xe(H(i.unit))}</b></div>`).join('')}
+    </div>`).join('');
+
+  const sel = G('calcService');
+  sel.innerHTML = PRICE_LIST.map((c,ci) => `<optgroup label="${xe(H(c.cat))}">${
+    c.items.map((i,ii)=>`<option value="${ci}:${ii}">${xe(H(i.name))} — ${fmt(i.price)}/${xe(H(i.unit))}</option>`).join('')
+  }</optgroup>`).join('');
+}
+
+let calcCart = [];
+function addCalcItem(){
+  const [ci,ii] = G('calcService').value.split(':').map(Number);
+  const qty = Math.max(1, Number(G('calcQty').value) || 1);
+  const item = PRICE_LIST[ci].items[ii];
+  calcCart.push({ name:item.name, unit:item.unit, price:item.price, qty });
+  renderCalc();
+}
+function removeCalcItem(idx){ calcCart.splice(idx,1); renderCalc(); }
+function renderCalc(){
+  const tbody = G('calcTbl').querySelector('tbody');
+  if(!calcCart.length){
+    tbody.innerHTML=''; G('calcEmpty').style.display='block'; G('calcTotalRow').style.display='none';
+    G('calcWaBtn').href = waLink(HC().ask);
+    return;
+  }
+  G('calcEmpty').style.display='none'; G('calcTotalRow').style.display='flex';
+  let total = 0;
+  tbody.innerHTML = calcCart.map((r,idx)=>{
+    const sum = r.price*r.qty; total += sum;
+    return `<tr><td>${xe(H(r.name))} × ${r.qty} ${xe(H(r.unit))}</td><td style="text-align:right;font-weight:700">${fmt(sum)}</td><td class="x" onclick="removeCalcItem(${idx})">✕</td></tr>`;
+  }).join('');
+  G('calcTotal').textContent = fmt(total);
+  try { sessionStorage.setItem('dogovor.estimate',JSON.stringify({items:calcCart,total,language:window.SiteLanguage?.get()||'ru'})); } catch(e) {}
+
+  const lines = calcCart.map(r=>`• ${H(r.name)} × ${r.qty} ${H(r.unit)} = ${fmt(r.price*r.qty)}`).join('\n');
+  const msg = `${HC().enquiry}\n${lines}\n${HC().total} ${fmt(total)} ${HC().estimate}`;
+  G('calcWaBtn').href = waLink(msg);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   ОТПРАВКА ТЗ / СХЕМЫ ПРОЕКТА
+══════════════════════════════════════════════════════════════ */
+G('tzFile') && G('tzFile').addEventListener('change', e=>{
+  const f = e.target.files[0];
+  const box = G('tzFilebox');
+  if(f){ box.classList.add('has'); G('tzFileLabel').textContent = '✓ ' + f.name; }
+  else{ box.classList.remove('has'); G('tzFileLabel').textContent = H('Нажмите, чтобы выбрать файл (PDF, изображение)'); }
+});
+function updateTzWaLink(){
+  const name = G('tzName').value.trim(), task = G('tzTask').value.trim();
+  const l = window.SiteLanguage?.get()||'ru';
+  const greet = {
+    kz:`Сәлеметсіз бе! Менің атым ${name||'...'}.${task?'\nТапсырма: '+task:'\nТапсырма/сызбаны жіберемін.'}\n(Файлды чатта қолмен тіркеймін)`,
+    ru:`Здравствуйте! Меня зовут ${name||'...'}.${task?'\nЗадача: '+task:'\nХочу отправить ТЗ/схему проекта.'}\n(Файл прикреплю здесь, в чате)`,
+    en:`Hello! My name is ${name||'...'}.${task?'\nTask: '+task:'\nI would like to send a project brief.'}\n(I will attach the file in the chat)`
+  }[l]||'';
+  G('tzWaBtn').href = waLink(greet);
+}
+['tzName','tzWa','tzTask'].forEach(id=> G(id) && G(id).addEventListener('input', updateTzWaLink));
+
+async function submitTzRequest(){
+  const err=G('tzErr'), ok=G('tzOk'), charge=G('tzCharge'), btn=G('tzSendBtn');
+  err.style.display='none'; ok.style.display='none';
+  const name=G('tzName').value.trim(), wa=G('tzWa').value.trim(), task=G('tzTask').value.trim();
+  const file=G('tzFile').files[0];
+  if(!name){err.textContent=H('Укажите имя');err.style.display='block';return;}
+  if(!wa){err.textContent=H('Укажите номер WhatsApp');err.style.display='block';return;}
+  if(!task && !file){err.textContent=H('Опишите задачу или приложите файл');err.style.display='block';return;}
+  if(!apiConfigured()){err.textContent=H('Отправка ещё не настроена на сайте (CONFIG.WEB_APP_URL) — воспользуйтесь кнопкой WhatsApp');err.style.display='block';return;}
+
+  btn.disabled=true; charge.classList.add('on');
+  try{
+    const body = {action:'submitRequest', name, whatsapp:wa, task, lang:window.SiteLanguage?.get()||'ru'};
+    if(file){
+      body.fileBase64 = await fileToBase64(file);
+      body.fileName = file.name;
+      body.fileMime = file.type || 'application/octet-stream';
+    }
+    const data = await apiPost(body);
+    charge.classList.remove('on'); btn.disabled=false;
+    if(data.ok){
+      ok.textContent=H('✅ Заявка отправлена! Я свяжусь с вами в WhatsApp в ближайшее время.');
+      ok.style.display='block';
+      G('tzName').value=''; G('tzWa').value=''; G('tzTask').value=''; G('tzFile').value='';
+      G('tzFilebox').classList.remove('has'); G('tzFileLabel').textContent=H('Нажмите, чтобы выбрать файл (PDF, изображение)');
+    }else{
+      err.textContent = data.error || H('Не удалось отправить заявку');
+      err.style.display='block';
+    }
+  }catch(e){
+    charge.classList.remove('on'); btn.disabled=false;
+    err.textContent = 'Ошибка сети: '+e; err.style.display='block';
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   ОТЗЫВЫ
+══════════════════════════════════════════════════════════════ */
+let revRating = 0;
+G('starPick') && G('starPick').addEventListener('click', e=>{
+  const v = e.target.dataset.v; if(!v) return;
+  revRating = Number(v);
+  [...G('starPick').children].forEach(s => s.classList.toggle('on', Number(s.dataset.v) <= revRating));
+});
+async function loadReviews(){
+  const list = G('revList');
+  if(!apiConfigured()) return;
+  try{
+    const data = await apiGet({action:'reviews'});
+    if(!data.ok || !(data.items||[]).length) return;
+    list.innerHTML = data.items.map(r => `
+      <div class="rev-card">
+        <div class="rev-top"><b>${xe(r.name)}</b><span class="stars">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</span></div>
+        <p>${xe(r.text)}</p>
+        <div class="rev-date">${xe(r.date)}</div>
+      </div>`).join('');
+  }catch(e){ /* оставляем текст-заглушку */ }
+}
+async function submitReview(){
+  const err=G('revErr'), ok=G('revOk'), charge=G('revCharge'), btn=G('revSendBtn');
+  err.style.display='none'; ok.style.display='none';
+  const name=G('revName').value.trim(), text=G('revText').value.trim();
+  if(!name){err.textContent=H('Укажите имя');err.style.display='block';return;}
+  if(!revRating){err.textContent=H('Поставьте оценку');err.style.display='block';return;}
+  if(!text){err.textContent=H('Напишите текст отзыва');err.style.display='block';return;}
+  if(!apiConfigured()){err.textContent=H('Приём отзывов ещё не настроен на сайте (CONFIG.WEB_APP_URL)');err.style.display='block';return;}
+
+  btn.disabled=true; charge.classList.add('on');
+  try{
+    const data = await apiPost({action:'submitReview', name, rating:revRating, text});
+    charge.classList.remove('on'); btn.disabled=false;
+    if(data.ok){
+      ok.textContent=H('✅ Спасибо! Отзыв отправлен на модерацию и появится на сайте после проверки.');
+      ok.style.display='block';
+      G('revName').value=''; G('revText').value=''; revRating=0;
+      [...G('starPick').children].forEach(s=>s.classList.remove('on'));
+    }else{
+      err.textContent = data.error || H('Не удалось отправить отзыв'); err.style.display='block';
+    }
+  }catch(e){
+    charge.classList.remove('on'); btn.disabled=false;
+    err.textContent = 'Ошибка сети: '+e; err.style.display='block';
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   АНИМАЦИЯ ПОЯВЛЕНИЯ СЕКЦИЙ ПРИ СКРОЛЛЕ
+══════════════════════════════════════════════════════════════ */
+function initReveal(){
+  const items = document.querySelectorAll('.reveal:not(.in)');
+  if(!('IntersectionObserver' in window)){ items.forEach(el=>el.classList.add('in')); return; }
+  const io = new IntersectionObserver(entries=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, {threshold:.12});
+  items.forEach(el=>io.observe(el));
+}
+
+/* ══════════════════════════════════════════════════════════════
+   Задача 10: «Мои договора» — локальная история клиента
+══════════════════════════════════════════════════════════════ */
+const MC_KEY = 'dogovor.my_contracts';
+const MC_STATUS_LABEL = {kz:{},ru:{},en:{}};
+const MC_WA_MSG = {
+  ru:(id,st)=>`Здравствуйте! Мой договор №${id}, статус: ${st}. Прошу уточнить.`,
+  kz:(id,st)=>`Сәлеметсіз бе! Менің шартым №${id}, мәртебесі: ${st}. Нақтылауды сұраймын.`,
+  en:(id,st)=>`Hello! My contract №${id}, status: ${st}. Please advise.`
+};
+function mcReadList(){
+  try{ const l=JSON.parse(localStorage.getItem(MC_KEY)||'[]'); return Array.isArray(l)?l:[]; }
+  catch(e){ return []; }
+}
+function mcWriteList(list){
+  try{ localStorage.setItem(MC_KEY, JSON.stringify(list)); }catch(e){}
+}
+function mcDocLink(docId){
+  return `${CONFIG.CONTRACT_URL}${CONFIG.CONTRACT_URL.includes('?')?'&':'?'}docId=${encodeURIComponent(docId)}#status`;
+}
+function openMyContracts(){
+  G('mcOverlay').classList.add('on');
+  renderMyContracts();
+}
+function closeMyContracts(){
+  G('mcOverlay').classList.remove('on');
+}
+function clearMyContracts(){
+  if(!confirm(H('Удалить всю историю договоров на этом устройстве?'))) return;
+  mcWriteList([]);
+  renderMyContracts();
+}
+async function renderMyContracts(){
+  const list = mcReadList();
+  const box = G('mcList');
+  const clearBtn = G('mcClearBtn');
+  if(!list.length){
+    box.innerHTML = `<div class="mcEmpty">${xe(H('Договоров пока нет'))}</div>`;
+    clearBtn.style.display = 'none';
+    return;
+  }
+  clearBtn.style.display = 'block';
+  box.innerHTML = list.map(entry => `
+    <div class="mcItem" id="mcItem_${xe(entry.docId)}">
+      <div class="mcRow">
+        <span class="mcId">${xe(entry.docId)}</span>
+        <span class="mcDate">${xe(mcFormatDate(entry.date))}</span>
+      </div>
+      <div class="mcStatus" id="mcStatus_${xe(entry.docId)}">${xe(H(entry.status||'На подписи'))}</div>
+      <div class="mcActions" id="mcActions_${xe(entry.docId)}">
+        <a class="btn bp" href="${xe(mcDocLink(entry.docId))}">${xe(H('Проверить статус'))}</a>
+      </div>
+    </div>`).join('');
+  /* Живой статус и кнопка WhatsApp — если сервер настроен и известны последние 4 цифры телефона */
+  if(apiConfigured()){
+    list.forEach(entry => { if(entry.phone4) mcRefreshEntry(entry); });
+  }
+}
+function mcFormatDate(iso){
+  try{ return new Date(iso).toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit',year:'numeric'}); }
+  catch(e){ return ''; }
+}
+async function mcRefreshEntry(entry){
+  try{
+    const data = await apiGet({action:'status', docId:entry.docId, phone4:entry.phone4});
+    if(!data.ok) return;
+    const list = mcReadList();
+    const idx = list.findIndex(x=>x.docId===entry.docId);
+    if(idx>-1){ list[idx].status = data.status; mcWriteList(list); }
+    const statusEl = G(`mcStatus_${entry.docId}`);
+    if(statusEl) statusEl.textContent = H(data.status);
+    if(data.status !== 'Подписан'){
+      const waPhone = String(data.ownerWhatsapp||'').replace(/\D/g,'');
+      if(waPhone){
+        const waLang = ['kz','ru','en'].includes(data.language) ? data.language : (window.SiteLanguage?.get()||'ru');
+        const msg = (MC_WA_MSG[waLang]||MC_WA_MSG.ru)(entry.docId, data.status);
+        const actionsEl = G(`mcActions_${entry.docId}`);
+        if(actionsEl && !actionsEl.querySelector('.mcWaBtn')){
+          const a=document.createElement('a');
+          a.className='btn bw mcWaBtn'; a.target='_blank'; a.rel='noopener';
+          a.href=`https://wa.me/${waPhone}?text=${encodeURIComponent(msg)}`;
+          a.textContent=H('Написать Исполнителю в WhatsApp');
+          actionsEl.appendChild(a);
+        }
+      }
+    }
+  }catch(e){ /* нет сети/сервер недоступен — оставляем сохранённый статус без изменений */ }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   INIT
+══════════════════════════════════════════════════════════════ */
+requestAnimationFrame(()=>{
+  initChrome();
+  renderPriceList();
+  renderCalc();
+  loadPortfolio();
+  loadReviews();
+  initReveal();
+});
+window.addEventListener('site-language-change',()=>{renderPriceList();renderCalc();initChrome();updateTzWaLink();});
+</script>
+</body>
+</html>

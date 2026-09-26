@@ -1,0 +1,99 @@
+/* Shared mobile layout and accessible language control */
+.site-lang-switch{display:inline-flex;align-items:center;gap:4px;flex-wrap:nowrap;flex-shrink:0;padding:3px;border:1px solid var(--border2,#3a4150);border-radius:10px;background:var(--surface,#1c2027)}
+.site-lang-switch button{font:700 11px/1.2 inherit;font-family:inherit;font-size:11px;min-height:32px;padding:6px 8px;border:0;border-radius:7px;background:transparent;color:var(--text,#eef1f5);cursor:pointer;white-space:nowrap;transition:.15s}
+.site-lang-switch button.selected,.site-lang-switch button[aria-pressed="true"]{background:var(--accent,#00d4ff);color:#07161c}
+.site-lang-switch button:hover:not(.selected):not([aria-pressed="true"]){background:var(--surface2,#242a33)}
+
+/* ─── BASE OVERFLOW PROTECTION ─── */
+html,body{max-width:100%;min-width:0}
+body{overflow-x:hidden}
+img,video,iframe,canvas{max-width:100%}
+input,select,textarea{max-width:100%;min-width:0}
+pre{max-width:100%;overflow-x:auto}
+.wrap,.card,.grid,.grid>*,.hero>*,.navrow>*{min-width:0}
+.card{overflow-wrap:anywhere}
+table{max-width:100%}
+.table-scroll,.tbl-wrap{max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+
+/* ─── TABLET (≤ 800px) ─── */
+@media(max-width:800px){
+  .langbar{position:static}
+  .site-lang-switch{max-width:100%}
+  .wrap{width:100%}
+  .navrow,.navcta,.brow{min-width:0}
+  .hero,.calcgrid,.twocol{grid-template-columns:minmax(0,1fr)!important}
+  .siggrid,.grid{grid-template-columns:minmax(0,1fr)!important}
+  .navrow nav{display:flex;overflow-x:auto;scrollbar-width:thin;white-space:nowrap}
+  .tabbar{display:flex;overflow-x:auto;scrollbar-width:thin}
+  .tabbar>*{flex-shrink:0}
+  .f input,.f select,.f textarea{width:100%;max-width:100%}
+  .tbl,.spec,.contract table{display:block;max-width:100%;overflow-x:auto}
+  .contract{overflow-wrap:anywhere}
+  .price-wrap,.tz-wrap,.rev-wrap{grid-template-columns:1fr!important}
+  .pf-grid{grid-template-columns:repeat(2,1fr)!important}
+}
+
+/* ─── MOBILE (≤ 720px) ─── */
+@media(max-width:720px){
+  .navrow{flex-wrap:wrap;gap:8px}
+  .navrow nav{order:3;flex-basis:100%;min-width:0}
+  .navcta{margin-left:auto;flex-wrap:wrap;justify-content:flex-end}
+  .wrap{padding-left:12px;padding-right:12px}
+  .card{padding:16px}
+  .topbar,.pwaBar,.langbar{flex-wrap:wrap;gap:8px}
+  .tabbar{overflow-x:auto;max-width:100%;padding-bottom:5px}
+  .tab{flex-shrink:0}
+  .brow{flex-wrap:wrap}
+  .grid{grid-template-columns:minmax(0,1fr)}
+  .hero{grid-template-columns:minmax(0,1fr)}
+  .orbit-wrap{max-width:min(280px,80vw)}
+  .section{padding:36px 0}
+  .skills{grid-template-columns:1fr 1fr!important}
+  /* Задача 4: поле подписи на мобильном — 90vw ширины, 200px высоты */
+  .padwrap{width:90vw}
+  canvas.pad{height:200px}
+}
+
+/* ─── SMALL PHONE (≤ 440px) ─── */
+@media(max-width:440px){
+  .langbar{justify-content:center;padding:8px}
+  .langbar .pwaInstall{margin:0}
+  .site-lang-switch{gap:2px;padding:2px}
+  .site-lang-switch button{min-width:39px;min-height:38px}
+  .brow .bp,.brow .bs,.brow .btn{max-width:100%;overflow-wrap:anywhere}
+  .topnav{flex-wrap:wrap}
+  canvas{touch-action:none}
+  .navcta{flex-wrap:wrap;justify-content:space-between;gap:4px}
+  .navcta .btn{flex:1;justify-content:center;padding:8px 10px;font-size:12px}
+}
+
+/* ─── TINY PHONE (≤ 390px) ─── */
+@media(max-width:390px){
+  .brand{white-space:normal;font-size:13px}
+  .navcta{width:100%}
+  .site-lang-switch button{padding:5px 6px;font-size:10px}
+  .hero h1{font-size:clamp(22px,7.5vw,36px)}
+  .herostats{gap:12px}
+  .herostats div{font-size:18px}
+  .section-h h2{font-size:22px}
+  .card{padding:12px}
+  .wrap{padding-left:10px;padding-right:10px}
+  .calcrow{grid-template-columns:1fr 80px auto!important}
+  .skills{grid-template-columns:1fr!important}
+  .pf-grid{grid-template-columns:1fr!important}
+}
+
+/* ─── VERY TINY (≤ 340px) ─── */
+@media(max-width:340px){
+  .herobtns{flex-direction:column}
+  .herobtns .btn,.herobtns a{width:100%;justify-content:center}
+  .herostats{flex-direction:column;gap:8px}
+  nav a{padding:6px 8px;font-size:12px}
+}
+
+/* ─── PRINT ─── */
+@media print{
+  .site-lang-switch{display:none!important}
+  .langbar{display:none!important}
+  .noprint{display:none!important}
+}

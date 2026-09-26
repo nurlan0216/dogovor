@@ -1,0 +1,781 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Панель Исполнителя — Договоры</title>
+
+<!-- ══════ PWA: манифест и иконки (ТЗ раздел 5, Этап 4) ══════
+     Файл этой страницы разместить в /dogovor/admin/ (см. ЭТАП4_ИЗМЕНЕНИЯ.md).
+     Свой манифест и иконки — отдельное "приложение" от клиентской страницы. -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#14171c">
+<link rel="icon" type="image/png" sizes="32x32" href="../icons/icon-admin-32.png">
+<link rel="apple-touch-icon" href="../icons/icon-admin-apple-touch-180.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Панель">
+<style>
+:root{
+  --bg:#14171c;--bg2:#0f1115;--surface:#1c2027;--surface2:#242a33;
+  --border:#2b313c;--border2:#3a4150;
+  --text:#eef1f5;--mid:#9aa4b2;
+  --accent:#00d4ff;--accent-dim:rgba(0,212,255,.16);--accent-soft:rgba(0,212,255,.45);
+  --spark:#ffd60a;--green:#3ddc84;--red:#ff5c5c;
+  --r:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Segoe UI',Arial,sans-serif;color:var(--text);
+  background:radial-gradient(1100px 520px at 12% -8%, rgba(0,212,255,.10), transparent 60%),var(--bg);
+  min-height:100vh;
+}
+.ic{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.8;flex:none;vertical-align:-3px}
+.wrap{max-width:1100px;margin:24px auto;padding:0 16px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:26px;box-shadow:0 10px 40px rgba(0,0,0,.45)}
+h1{font-size:20px;margin-bottom:4px}
+.sub{color:var(--mid);font-size:13px;margin-bottom:18px}
+.f label{display:block;font-size:13px;font-weight:600;color:var(--mid);margin-bottom:4px}
+.f input,.f select,.f textarea{width:100%;padding:10px 12px;border:1.5px solid var(--border2);border-radius:var(--r);
+  font-size:14px;background:var(--surface2);color:var(--text)}
+.f input:focus,.f select:focus,.f textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-dim)}
+.f textarea{min-height:70px;resize:vertical}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.full{grid-column:1/-1}
+@media(max-width:720px){.grid{grid-template-columns:1fr}}
+button{display:inline-flex;align-items:center;gap:7px;padding:10px 16px;border:0;border-radius:var(--r);
+  cursor:pointer;font-size:13px;font-weight:600;color:var(--text)}
+.bp{background:var(--accent);color:#07161c}
+.bp:hover{filter:brightness(1.08)}
+.bg{background:var(--green);color:#06241a}
+.bg:hover{filter:brightness(1.08)}
+.br{background:var(--red);color:#2a0606}
+.br:hover{filter:brightness(1.08)}
+.bs{background:var(--surface2);color:var(--text);border:1px solid var(--border2)}
+.bs:hover{background:#2c333e;border-color:var(--accent)}
+button:disabled{opacity:.4;cursor:not-allowed}
+.brow{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.note{padding:11px 15px;border-radius:var(--r);font-size:13px;margin:12px 0;line-height:1.5;border:1px solid var(--border)}
+.n-y{background:rgba(255,214,10,.08);border-left:4px solid var(--spark)}
+.n-g{background:rgba(61,220,132,.08);border-left:4px solid var(--green)}
+.n-b{background:var(--accent-dim);border-left:4px solid var(--accent)}
+.n-r{background:rgba(255,92,92,.08);border-left:4px solid var(--red)}
+.charge{display:none;height:4px;border-radius:4px;background:var(--border);overflow:hidden;margin-top:10px}
+.charge.on{display:block}
+.charge i{display:block;height:100%;width:40%;border-radius:4px;background:linear-gradient(90deg,var(--accent),var(--spark));animation:load 1s ease-in-out infinite}
+@keyframes load{0%{margin-left:-40%}100%{margin-left:100%}}
+table{width:100%;border-collapse:collapse;font-size:13px;margin-top:14px}
+th,td{border:1px solid var(--border);padding:9px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface2);color:var(--mid);font-weight:600;position:sticky;top:0}
+tr:hover td{background:rgba(255,255,255,.02)}
+.badge{display:inline-block;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700}
+.b-draft{background:rgba(154,164,178,.18);color:var(--mid)}
+.b-wait{background:rgba(255,214,10,.16);color:var(--spark)}
+.b-signed{background:rgba(61,220,132,.16);color:var(--green)}
+.b-rejected{background:rgba(255,92,92,.16);color:var(--red)}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.tabbar{display:flex;gap:8px;margin-bottom:16px}
+.tab{padding:9px 16px;border-radius:var(--r);border:1.5px solid var(--border2);background:var(--surface2);color:var(--mid);cursor:pointer;font-weight:700;font-size:13px}
+.tab.on{background:var(--accent-dim);border-color:var(--accent);color:var(--accent)}
+.tbl{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}
+.tbl th,.tbl td{border:1px solid var(--border);padding:7px 8px}
+.tbl td input,.tbl td select{width:100%;padding:5px 6px;border:1px solid var(--border2);border-radius:6px;background:var(--surface2);color:var(--text);font-size:13px}
+canvas.pad{display:block;width:100%;height:130px;border:2px dashed var(--border2);border-radius:8px;touch-action:none;background:#f9fbff;cursor:crosshair}
+canvas.pad.ok{border:2px solid var(--green)}
+.small{font-size:12px;color:var(--mid)}
+
+/* ══════ PWA: бар установки и офлайн-баннер (Этап 4, ТЗ раздел 5) ══════ */
+.pwaBar{display:flex;align-items:center;justify-content:flex-end;gap:8px;padding:8px 16px;
+  background:var(--bg2);border-bottom:1px solid var(--border)}
+.pwaInstall{display:none;align-items:center;gap:6px;border:1.5px solid var(--accent);border-radius:20px;
+  background:transparent;color:var(--accent);padding:6px 14px;font-size:12px}
+.pwaInstall:hover{background:var(--accent);color:#08141a}
+.pwaInstall .ic{width:15px;height:15px}
+.pwaInstall.show{display:inline-flex}
+.pwaOfflineBar{display:none;align-items:center;gap:8px;background:rgba(255,92,92,.14);color:var(--text);
+  border-bottom:1px solid var(--red);padding:9px 16px;font-size:13px}
+.pwaOfflineBar.show{display:flex}
+.pwaOfflineBar .ic{color:var(--red);width:16px;height:16px}
+</style>
+<link rel="stylesheet" href="../site-mobile.css">
+</head>
+<body>
+
+<!-- ══════ PWA: бар установки — виден и на экране входа, и после входа ══════ -->
+<div class="pwaBar">
+  <button class="pwaInstall" id="pwaInstallBtn" onclick="pwaInstallClick()">📲 Установить приложение</button>
+</div>
+<div class="pwaOfflineBar" id="pwaOfflineBanner">⚠️ Нет соединения с интернетом. Список и действия (вход, подписать/отклонить, создать) станут доступны снова, когда появится сеть.</div>
+
+<div class="wrap">
+
+<!-- ══════════ ЭКРАН ВХОДА ══════════ -->
+<div class="card" id="loginCard">
+  <h1>Панель Исполнителя</h1>
+  <p class="sub">Вход по логину и паролю, заданным в Script Properties Apps Script.</p>
+  <div class="grid">
+    <div class="f"><label>Логин</label><input id="loginUser" autocomplete="username"></div>
+    <div class="f"><label>Пароль</label><input id="loginPass" type="password" autocomplete="current-password"></div>
+  </div>
+  <div class="brow">
+    <button class="bp" id="loginBtn" onclick="doLogin()">Войти</button>
+  </div>
+  <div class="charge" id="loginCharge"><i></i></div>
+  <div class="note n-r" id="loginErr" style="display:none"></div>
+</div>
+
+<!-- ══════════ ПАНЕЛЬ ══════════ -->
+<div id="panel" style="display:none">
+  <div class="topbar">
+    <h1 style="margin:0">Договоры</h1>
+    <button class="bs" onclick="doLogout()">Выйти</button>
+  </div>
+
+  <div class="tabbar">
+    <div class="tab on" id="tabList" onclick="showTab('list')">Список</div>
+    <div class="tab" id="tabCreate" onclick="showTab('create')">Создать вручную</div>
+    <div class="tab" id="tabRequests" onclick="showTab('requests')">Заявки (ТЗ)</div>
+    <div class="tab" id="tabPortfolio" onclick="showTab('portfolio')">Портфолио</div>
+    <div class="tab" id="tabReviews" onclick="showTab('reviews')">Отзывы</div>
+  </div>
+
+  <!-- ─── СПИСОК ─── -->
+  <div class="card" id="listSec">
+    <div class="brow" style="margin-top:0">
+      <button class="bs" onclick="loadList()">↻ Обновить</button>
+    </div>
+    <div class="charge" id="listCharge"><i></i></div>
+    <div class="note n-r" id="listErr" style="display:none"></div>
+    <div style="overflow-x:auto">
+    <table id="listTbl">
+      <thead><tr>
+        <th>DocID</th><th>Тип</th><th>Клиент</th><th>Телефон</th><th>Статус</th>
+        <th>Отправлен</th><th>Подписан</th><th>Файлы</th><th>Действия</th>
+      </tr></thead>
+      <tbody id="listBody"></tbody>
+    </table>
+    </div>
+  </div>
+
+  <!-- ─── РУЧНОЕ СОЗДАНИЕ ─── -->
+  <div class="card" id="createSec" style="display:none">
+    <p class="sub">Аналог формы клиента, но с более широкими правами: можно вручную задать номер договора.
+      Реквизиты и подпись Исполнителя подставляются сервером автоматически — здесь их вводить не нужно.</p>
+
+    <div class="grid">
+      <div class="f"><label>№ договора (необязательно — иначе сгенерируется сам)</label><input id="mDocId" placeholder="ЭЛ-2026-0001"></div>
+      <div class="f"><label>Язык договора клиента</label><select id="mLang"><option value="kz">Қазақша</option><option value="ru" selected>Русский</option><option value="en">English</option></select></div>
+      <div class="f"><label>Тип заказчика</label>
+        <select id="mType"><option value="ФЛ">Физическое лицо</option><option value="ИП">ИП</option><option value="ТОО">ТОО / АО</option></select>
+      </div>
+      <div class="f"><label>ФИО / Наименование</label><input id="mCustomer"></div>
+      <div class="f"><label>ИИН / БИН (12 цифр)</label><input id="mIin"></div>
+      <div class="f"><label>Телефон</label><input id="mPhone" placeholder="+7 700 000-00-00"></div>
+      <div class="f"><label>E-mail</label><input id="mEmail" type="email"></div>
+      <div class="f full"><label>Адрес объекта</label><input id="mAddr"></div>
+      <div class="f full"><label>Виды работ (можно несколько)</label>
+        <select id="mWorkType" multiple style="height:110px">
+          <option>Электромонтажные работы</option><option>Монтаж видеонаблюдения</option>
+          <option>Электроснабжение / Щит</option><option>Освещение, розетки, выключатели</option>
+          <option>Диагностика / Ремонт</option>
+        </select>
+      </div>
+      <div class="f full"><label>Техническое задание / описание</label><textarea id="mTask"></textarea></div>
+      <div class="f"><label>Кто покупает материалы</label>
+        <select id="mMaterials"><option value="customer">Заказчик</option><option value="contractor">Исполнитель</option><option value="mixed">Смешанный вариант</option></select>
+      </div>
+      <div class="f"><label>Гарантия (мес.)</label><input id="mWarranty" type="number" value="12" min="0"></div>
+      <div class="f"><label>Дата начала</label><input id="mStart" type="date"></div>
+      <div class="f"><label>Дата окончания</label><input id="mEnd" type="date"></div>
+      <div class="f"><label>Стоимость работ, ₸</label><input id="mTotal" type="number" min="0" value="0"></div>
+      <div class="f"><label>Аванс, ₸</label><input id="mPaid" type="number" min="0" value="0"></div>
+      <div class="f"><label>Порядок оплаты</label>
+        <select id="mPayment"><option>100% предоплата</option><option selected>Аванс + окончательный расчёт</option><option>Поэтапная оплата</option><option>После выполнения</option></select>
+      </div>
+    </div>
+
+    <div style="overflow-x:auto">
+    <table class="tbl">
+      <thead><tr><th style="width:26px">#</th><th>Наименование</th><th style="width:70px">Ед.</th><th style="width:70px">Кол-во</th><th style="width:90px">Цена ₸</th><th style="width:100px">Сумма ₸</th><th style="width:26px"></th></tr></thead>
+      <tbody id="mBody"></tbody>
+    </table>
+    </div>
+    <div class="brow"><button class="bs" onclick="mAddRow()">+ Добавить позицию</button></div>
+
+    <div class="f full" style="margin-top:16px">
+      <label>Подпись Заказчика (если заказчик подписывает лично в присутствии Исполнителя)</label>
+      <canvas class="pad" id="mCanvas"></canvas>
+      <div class="brow" style="margin-top:8px">
+        <button class="bs" onclick="mClearSig()">✕ Очистить</button>
+      </div>
+    </div>
+    <label style="display:flex;gap:8px;align-items:flex-start;font-size:12px;color:var(--mid);margin-top:12px;cursor:pointer">
+      <input type="checkbox" id="mConsent" style="margin-top:3px;flex:none">
+      <span>Заказчик ознакомлен с условиями договора (раздел 5 — электронная подпись, раздел 6 — персональные данные) и даёт согласие на их обработку и электронное подписание.</span>
+    </label>
+
+    <div class="brow">
+      <button class="bp" id="mCreateBtn" onclick="doCreate()">Создать договор</button>
+    </div>
+    <div class="charge" id="createCharge"><i></i></div>
+    <div class="note n-r" id="createErr" style="display:none"></div>
+    <div class="note n-g" id="createOk" style="display:none"></div>
+  </div>
+
+  <!-- ─── ЗАЯВКИ (ТЗ/схемы с главной страницы) ─── -->
+  <div class="card" id="requestsSec" style="display:none">
+    <p class="sub">Заявки, присланные клиентами с главной страницы (раздел «Отправить ТЗ»). Нажмите на WhatsApp, чтобы сразу открыть чат с клиентом.</p>
+    <div class="brow" style="margin-top:0"><button class="bs" onclick="loadRequests()">↻ Обновить</button></div>
+    <div class="charge" id="reqCharge"><i></i></div>
+    <div class="note n-r" id="reqErr" style="display:none"></div>
+    <div style="overflow-x:auto">
+    <table id="reqTbl">
+      <thead><tr><th>Дата</th><th>Имя</th><th>WhatsApp</th><th>Задача</th><th>Файл</th></tr></thead>
+      <tbody id="reqBody"></tbody>
+    </table>
+    </div>
+  </div>
+
+  <!-- ─── ПОРТФОЛИО (фото выполненных работ) ─── -->
+  <div class="card" id="portfolioSec" style="display:none">
+    <p class="sub">Фото выполненных работ для раздела «Портфолио» на главной странице. Загруженное фото сразу становится видно всем посетителям сайта.</p>
+    <div class="grid">
+      <div class="f"><label>Заголовок работы</label><input id="pfTitle" placeholder="Например: Монтаж видеонаблюдения, 4 камеры"></div>
+      <div class="f"><label>Фото</label><input id="pfPhoto" type="file" accept="image/*"></div>
+      <div class="f full"><label>Краткое описание (необязательно)</label><textarea id="pfDesc"></textarea></div>
+    </div>
+    <div class="brow">
+      <button class="bp" id="pfUploadBtn" onclick="doUploadPortfolio()">Загрузить</button>
+      <button class="bs" onclick="loadPortfolio()">↻ Обновить список</button>
+    </div>
+    <div class="charge" id="pfCharge"><i></i></div>
+    <div class="note n-r" id="pfErr" style="display:none"></div>
+    <div class="note n-g" id="pfOk" style="display:none"></div>
+    <div id="pfGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-top:16px"></div>
+  </div>
+
+  <!-- ─── ОТЗЫВЫ (модерация) ─── -->
+  <div class="card" id="reviewsSec" style="display:none">
+    <p class="sub">Отзывы клиентов с главной страницы. «На модерации» — виден только здесь; «Одобрен» — появляется на сайте у всех.</p>
+    <div class="brow" style="margin-top:0"><button class="bs" onclick="loadReviews()">↻ Обновить</button></div>
+    <div class="charge" id="revCharge"><i></i></div>
+    <div class="note n-r" id="revErr" style="display:none"></div>
+    <div id="revList" style="margin-top:12px;display:flex;flex-direction:column;gap:10px"></div>
+  </div>
+</div>
+
+</div>
+
+<script>
+/* ══════════════════════════════════════
+   BACKEND
+══════════════════════════════════════ */
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbynXXVVUey4Zrxh24QCKiXY6SLh9JrFVbE1XPYM7_gWFKca2VGH1AU1wakqITeZ7L_R/exec';
+const G=id=>document.getElementById(id);
+const xe=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+
+/* Токен сессии живёт максимум 6 часов на сервере (потолок CacheService,
+   см. Code.gs) — храним его в localStorage, чтобы страница не разлогинивала
+   при обновлении; если сервер скажет, что сессия истекла, просто вернём
+   на экран входа. */
+function getToken(){return localStorage.getItem('adminToken')||''}
+function setToken(t){t?localStorage.setItem('adminToken',t):localStorage.removeItem('adminToken')}
+
+async function apiPost(body){
+  const res=await fetch(WEB_APP_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(body)});
+  return res.json();
+}
+async function apiGet(params){
+  const qs=new URLSearchParams(params).toString();
+  const res=await fetch(`${WEB_APP_URL}?${qs}`);
+  return res.json();
+}
+function isSessionError(data){
+  return !data.ok && /токен|сессия/i.test(data.error||'');
+}
+function backToLogin(msg){
+  setToken('');
+  G('panel').style.display='none';
+  G('loginCard').style.display='block';
+  if(msg){G('loginErr').textContent=msg;G('loginErr').style.display='block';}
+}
+
+/* ══════════════════════════════════════
+   ВХОД
+══════════════════════════════════════ */
+async function doLogin(){
+  const login=G('loginUser').value.trim(), pass=G('loginPass').value;
+  const err=G('loginErr'), charge=G('loginCharge'), btn=G('loginBtn');
+  err.style.display='none';
+  if(!login||!pass){err.textContent='Введите логин и пароль';err.style.display='block';return;}
+  if(WEB_APP_URL.indexOf('ВСТАВЬТЕ_')===0){err.textContent='WEB_APP_URL не настроен — см. комментарий в коде страницы';err.style.display='block';return;}
+  btn.disabled=true; charge.classList.add('on');
+  try{
+    const data=await apiPost({action:'login',login,password:pass});
+    charge.classList.remove('on'); btn.disabled=false;
+    if(data.ok){
+      setToken(data.token);
+      G('loginCard').style.display='none';
+      G('panel').style.display='block';
+      loadList();
+    }else{
+      err.textContent=data.error||'Не удалось войти';
+      err.style.display='block';
+    }
+  }catch(e){
+    charge.classList.remove('on'); btn.disabled=false;
+    err.textContent='Ошибка сети: '+e;
+    err.style.display='block';
+  }
+}
+function doLogout(){backToLogin();}
+
+/* ══════════════════════════════════════
+   ВКЛАДКИ
+══════════════════════════════════════ */
+const TABS=['list','create','requests','portfolio','reviews'];
+const TAB_SEC={list:'listSec',create:'createSec',requests:'requestsSec',portfolio:'portfolioSec',reviews:'reviewsSec'};
+const TAB_BTN={list:'tabList',create:'tabCreate',requests:'tabRequests',portfolio:'tabPortfolio',reviews:'tabReviews'};
+function showTab(name){
+  TABS.forEach(t=>{
+    G(TAB_SEC[t]).style.display=(t===name)?'block':'none';
+    G(TAB_BTN[t]).classList.toggle('on',t===name);
+  });
+  if(name==='requests') loadRequests();
+  if(name==='portfolio') loadPortfolio();
+  if(name==='reviews') loadReviews();
+}
+
+/* ══════════════════════════════════════
+   СПИСОК ДОГОВОРОВ
+══════════════════════════════════════ */
+const STATUS_BADGE={
+  'Черновик':'b-draft','На подписи':'b-wait','Подписан':'b-signed','Отклонён':'b-rejected'
+};
+async function loadList(){
+  const charge=G('listCharge'), err=G('listErr'), body=G('listBody');
+  err.style.display='none';
+  charge.classList.add('on');
+  try{
+    const data=await apiGet({action:'adminList',token:getToken()});
+    charge.classList.remove('on');
+    if(isSessionError(data)){backToLogin('Сессия истекла — войдите заново');return;}
+    if(!data.ok){err.textContent=data.error||'Не удалось загрузить список';err.style.display='block';return;}
+
+    body.innerHTML=(data.contracts||[]).map(c=>{
+      const cls=STATUS_BADGE[c.status]||'b-draft';
+      const canAct=c.status==='На подписи';
+      const active=c.status!=='Отклонён';
+      const link=c.status==='Подписан'?c.signedPdfUrl:c.draftPdfUrl;
+      const digits=String(c.clientPhone||'').replace(/\D/g,'');
+      const msg=clientContractMessage(c,link);
+      const wa=digits ? `https://wa.me/${digits}?text=${encodeURIComponent(msg)}` : '';
+      const sms=digits ? `sms:+${digits}?body=${encodeURIComponent(msg)}` : '';
+      return `<tr>
+        <td>${xe(c.docId)}<div class="small">${xe(({kz:'ҚАЗ',ru:'РУС',en:'ENG'})[c.lang]||'РУС')}</div></td><td>${xe(c.type)}</td><td>${xe(c.clientName)}</td><td>${xe(c.clientPhone)}</td>
+        <td><span class="badge ${cls}">${xe(c.status)}</span></td>
+        <td>${xe(c.sentAt||'—')}</td><td>${xe(c.signedAt||'—')}</td>
+        <td>${c.status!=='Подписан'&&c.draftPdfUrl?`<a href="${xe(c.draftPdfUrl)}" target="_blank" rel="noopener">черновик</a>`:''}${c.signedPdfUrl?` · <a href="${xe(c.signedPdfUrl)}" target="_blank" rel="noopener">подписанный</a>`:''}</td>
+        <td>${canAct?
+          `<button class="bg" style="padding:6px 10px;font-size:12px" onclick="doSign(decodeURIComponent('${xe(encodeURIComponent(c.docId))}'))">Подписать</button>
+           <button class="br" style="padding:6px 10px;font-size:12px;margin-top:4px" onclick="doReject(decodeURIComponent('${xe(encodeURIComponent(c.docId))}'))">Отклонить</button>`
+          :'—'}${active&&link&&/^https:\/\//.test(link)?`<div class="brow" style="margin-top:7px">
+          ${wa?`<a href="${xe(wa)}" target="_blank" rel="noopener">WhatsApp</a>`:''}
+          ${sms?`<a href="${xe(sms)}">SMS (открыть)</a>`:''}
+          <button class="bs" style="padding:5px" onclick="sendContractSms('${xe(encodeURIComponent(c.docId))}')">SMS через сервис</button>
+          </div>`:''}</td>
+      </tr>`;
+    }).join('')||`<tr><td colspan="9" class="small">Договоров пока нет.</td></tr>`;
+  }catch(e){
+    charge.classList.remove('on');
+    err.textContent='Ошибка сети: '+e; err.style.display='block';
+  }
+}
+
+
+function clientContractMessage(c,url){
+ const s={kz:`Сәлеметсіз бе! № ${c.docId} шартыңыз ${c.status==='Подписан'?'қол қойылды':'растауға жіберілді'}.\nGoogle Drive сілтемесі: ${url}`,
+ ru:`Здравствуйте! Договор №${c.docId} ${c.status==='Подписан'?'подписан':'отправлен на подтверждение'}.\nСсылка на Google Drive: ${url}`,
+ en:`Hello! Contract ${c.docId} has been ${c.status==='Подписан'?'signed':'sent for approval'}.\nGoogle Drive link: ${url}`};
+ return s[c.lang]||s.ru;
+}
+async function sendContractSms(encodedDocId){
+ const docId=decodeURIComponent(encodedDocId);
+ if(!confirm('Отправить SMS клиенту по договору '+docId+'?'))return;
+ try{
+  const data=await apiPost({action:'adminSendSms',token:getToken(),docId});
+  if(isSessionError(data)){backToLogin('Сессия истекла — войдите заново');return;}
+  alert(data.ok?'SMS-провайдер подтвердил отправку.':(data.error||'SMS не отправлено.'));
+ }catch(e){alert('Сбой соединения: '+e);}
+}
+
+async function doSign(docId){
+  if(!confirm(`Подписать договор ${docId}? Клиенту будет отправлен подписанный PDF на email.`))return;
+  const data=await apiPost({action:'adminSign',token:getToken(),docId});
+  if(isSessionError(data)){backToLogin('Сессия истекла — войдите заново');return;}
+  if(!data.ok) alert('Не удалось подписать: '+(data.error||'—'));
+  loadList();
+}
+async function doReject(docId){
+  if(!confirm(`Отклонить договор ${docId}?`))return;
+  const data=await apiPost({action:'adminReject',token:getToken(),docId});
+  if(isSessionError(data)){backToLogin('Сессия истекла — войдите заново');return;}
+  if(!data.ok) alert('Не удалось отклонить: '+(data.error||'—'));
+  loadList();
+}
+
+/* ══════════════════════════════════════
+   РУЧНОЕ СОЗДАНИЕ — спецификация
+══════════════════════════════════════ */
+let mrn=0;
+function mAddRow(){
+  mrn++;
+  const r=document.createElement('tr');
+  r.innerHTML=`<td style="text-align:center;color:var(--mid);font-size:12px">${mrn}</td>
+<td><input class="iname"></td>
+<td><select class="un"><option>шт.</option><option>м</option><option>п.м</option><option>компл.</option><option>услуга</option><option>час</option><option>кв.м</option></select></td>
+<td><input class="qq" type="number" value="1" min="0"></td>
+<td><input class="pp" type="number" value="0" min="0"></td>
+<td class="r sm" style="text-align:right;font-weight:600">0</td>
+<td><button class="bs" style="padding:4px 8px;font-size:12px" onclick="this.closest('tr').remove()">✕</button></td>`;
+  G('mBody').appendChild(r);
+  const upd=()=>{r.querySelector('.sm').textContent=((+r.querySelector('.qq').value||0)*(+r.querySelector('.pp').value||0)).toLocaleString('ru-RU');};
+  r.querySelectorAll('input').forEach(x=>x.addEventListener('input',upd));
+}
+mAddRow();
+
+/* ══════════════════════════════════════
+   РУЧНОЕ СОЗДАНИЕ — подпись заказчика (canvas)
+══════════════════════════════════════ */
+let mSigned=false,mSigDataUrl='',mSigW=0,mSigH=0;
+function initMPad(){
+  const cv=G('mCanvas');
+  function setupSize(){cv.width=cv.offsetWidth||340;cv.height=130;}
+  setupSize();
+  window.addEventListener('resize',setupSize);
+  let drawing=false,lx=0,ly=0;
+  function getXY(e){
+    const rect=cv.getBoundingClientRect();
+    const sx=cv.width/rect.width, sy=cv.height/rect.height;
+    const src=e.touches?e.touches[0]:e;
+    return[(src.clientX-rect.left)*sx,(src.clientY-rect.top)*sy];
+  }
+  function start(e){e.preventDefault();drawing=true;[lx,ly]=getXY(e);}
+  function move(e){
+    if(!drawing)return;e.preventDefault();
+    const[x,y]=getXY(e);
+    const ctx=cv.getContext('2d');
+    ctx.beginPath();ctx.moveTo(lx,ly);ctx.lineTo(x,y);
+    ctx.strokeStyle='#111';ctx.lineWidth=2.5;ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();
+    [lx,ly]=[x,y];
+    cv.classList.add('ok'); mSigned=true;
+  }
+  function stop(){drawing=false;}
+  cv.addEventListener('mousedown',start);cv.addEventListener('mousemove',move);
+  cv.addEventListener('mouseup',stop);cv.addEventListener('mouseleave',stop);
+  cv.addEventListener('touchstart',start,{passive:false});
+  cv.addEventListener('touchmove',move,{passive:false});
+  cv.addEventListener('touchend',stop);
+}
+function mClearSig(){
+  const cv=G('mCanvas');
+  cv.getContext('2d').clearRect(0,0,cv.width,cv.height);
+  cv.classList.remove('ok'); mSigned=false; mSigDataUrl=''; mSigW=0; mSigH=0;
+}
+function cropSig(canvas){
+  const ctx=canvas.getContext('2d'), w=canvas.width, h=canvas.height;
+  const data=ctx.getImageData(0,0,w,h).data;
+  let minX=w,minY=h,maxX=-1,maxY=-1;
+  for(let y=0;y<h;y++)for(let x=0;x<w;x++){
+    if(data[(y*w+x)*4+3]>10){if(x<minX)minX=x;if(x>maxX)maxX=x;if(y<minY)minY=y;if(y>maxY)maxY=y;}
+  }
+  if(maxX<0)return null;
+  const pad=4;minX=Math.max(0,minX-pad);minY=Math.max(0,minY-pad);
+  maxX=Math.min(w-1,maxX+pad);maxY=Math.min(h-1,maxY+pad);
+  const cw=maxX-minX+1,ch=maxY-minY+1;
+  const out=document.createElement('canvas');out.width=cw;out.height=ch;
+  out.getContext('2d').drawImage(canvas,minX,minY,cw,ch,0,0,cw,ch);
+  return{dataUrl:out.toDataURL('image/png'),w:cw,h:ch};
+}
+
+/* ══════════════════════════════════════
+   РУЧНОЕ СОЗДАНИЕ — отправка (action=adminCreate)
+══════════════════════════════════════ */
+async function doCreate(){
+  const err=G('createErr'), ok=G('createOk'), charge=G('createCharge'), btn=G('mCreateBtn');
+  err.style.display='none'; ok.style.display='none';
+
+  if(!G('mCustomer').value.trim()){err.textContent='Укажите ФИО / наименование заказчика';err.style.display='block';return;}
+  if(!/^\d{12}$/.test(G('mIin').value.trim())){err.textContent='ИИН/БИН должен содержать 12 цифр';err.style.display='block';return;}
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(G('mEmail').value.trim())){err.textContent='Укажите корректный e-mail';err.style.display='block';return;}
+  if(!G('mPhone').value.trim()){err.textContent='Укажите телефон заказчика';err.style.display='block';return;}
+  if((+G('mTotal').value||0)<=0){err.textContent='Укажите стоимость работ';err.style.display='block';return;}
+  if(!mSigned){err.textContent='Нужна подпись заказчика на холсте (или попросите заказчика подписать со своего телефона через основную форму)';err.style.display='block';return;}
+  if(!G('mConsent').checked){err.textContent='Отметьте согласие заказчика с условиями договора';err.style.display='block';return;}
+
+  const cropped=cropSig(G('mCanvas'));
+  if(!cropped){err.textContent='Подпись пуста';err.style.display='block';return;}
+  mSigDataUrl=cropped.dataUrl; mSigW=cropped.w; mSigH=cropped.h;
+
+  const specRows=[...document.querySelectorAll('#mBody tr')].map(r=>({
+    name:r.querySelector('.iname')?.value||'',
+    unit:r.querySelector('.un')?.value||'',
+    qty:+r.querySelector('.qq')?.value||0,
+    price:+r.querySelector('.pp')?.value||0,
+    sum:(+r.querySelector('.qq')?.value||0)*(+r.querySelector('.pp')?.value||0)
+  })).filter(r=>r.name);
+
+  const contract={
+    docId:G('mDocId').value.trim()||undefined,
+    type:G('mType').value,
+    lang:G('mLang').value,
+    customer:G('mCustomer').value.trim(),
+    iin:G('mIin').value.trim(),
+    phone:G('mPhone').value.trim(),
+    email:G('mEmail').value.trim(),
+    objectAddress:G('mAddr').value.trim(),
+    workType:[...G('mWorkType').selectedOptions].map(o=>o.text),
+    task:G('mTask').value.trim(),
+    materials:G('mMaterials').value,
+    warranty:G('mWarranty').value,
+    start:G('mStart').value,
+    end:G('mEnd').value,
+    total:+G('mTotal').value||0,
+    paid:+G('mPaid').value||0,
+    payment:G('mPayment').value,
+    specRows,
+    clientSignaturePngBase64:mSigDataUrl.replace(/^data:image\/png;base64,/,''),
+    clientSignatureWidth:mSigW,
+    clientSignatureHeight:mSigH,
+    consentGiven:true,
+    ipClient:'',
+    geo:'',
+    userAgent:navigator.userAgent+' (создано вручную из /admin)'
+  };
+
+  btn.disabled=true; charge.classList.add('on');
+  try{
+    const data=await apiPost({action:'adminCreate',token:getToken(),contract});
+    charge.classList.remove('on'); btn.disabled=false;
+    if(isSessionError(data)){backToLogin('Сессия истекла — войдите заново');return;}
+    if(data.ok){
+      ok.textContent=`✅ Договор № ${data.docId} создан. Черновик отправлен Исполнителю на подтверждение (см. вкладку «Список»).`;
+      ok.style.display='block';
+      loadList();
+    }else{
+      err.textContent=data.error||'Не удалось создать договор';
+      err.style.display='block';
+    }
+  }catch(e){
+    charge.classList.remove('on'); btn.disabled=false;
+    err.textContent='Ошибка сети: '+e; err.style.display='block';
+  }
+}
+
+/* ══════════════════════════════════════
+   ЗАЯВКИ (ТЗ/схемы с главной страницы) — Этап 6
+══════════════════════════════════════ */
+async function loadRequests(){
+  const charge=G('reqCharge'), err=G('reqErr'), body=G('reqBody');
+  err.style.display='none'; charge.classList.add('on');
+  try{
+    const data=await apiGet({action:'adminRequests',token:getToken()});
+    charge.classList.remove('on');
+    if(isSessionError(data)){backToLogin('Сессия истекла — войдите заново');return;}
+    if(!data.ok){err.textContent=data.error||'Не удалось загрузить заявки';err.style.display='block';return;}
+    body.innerHTML=(data.items||[]).map(r=>{
+      const wa=buildWaLink(r.whatsapp);
+      return `<tr>
+        <td>${xe(r.date)}</td><td>${xe(r.name)}</td>
+        <td>${wa?`<a href="${xe(wa)}" target="_blank">📲 ${xe(r.whatsapp)}</a>`:xe(r.whatsapp)}</td>
+        <td style="max-width:280px;white-space:pre-wrap">${xe(r.task||'—')}</td>
+        <td>${r.fileUrl?`<a href="${xe(r.fileUrl)}" target="_blank">открыть файл</a>`:'—'}</td>
+      </tr>`;
+    }).join('')||`<tr><td colspan="5" class="small">Заявок пока нет.</td></tr>`;
+  }catch(e){charge.classList.remove('on');err.textContent='Ошибка сети: '+e;err.style.display='block';}
+}
+function buildWaLink(phone){
+  const digits=String(phone||'').replace(/[^0-9]/g,'');
+  return digits?`https://wa.me/${digits}`:'';
+}
+
+/* ══════════════════════════════════════
+   ПОРТФОЛИО — Этап 6
+══════════════════════════════════════ */
+function fileToBase64(file){
+  return new Promise((resolve,reject)=>{
+    const r=new FileReader();
+    r.onload=()=>resolve(String(r.result).split(',')[1]);
+    r.onerror=reject;
+    r.readAsDataURL(file);
+  });
+}
+async function doUploadPortfolio(){
+  const err=G('pfErr'), ok=G('pfOk'), charge=G('pfCharge'), btn=G('pfUploadBtn');
+  err.style.display='none'; ok.style.display='none';
+  const title=G('pfTitle').value.trim();
+  const fileInput=G('pfPhoto');
+  if(!title){err.textContent='Укажите заголовок работы';err.style.display='block';return;}
+  if(!fileInput.files[0]){err.textContent='Выберите фото';err.style.display='block';return;}
+  btn.disabled=true; charge.classList.add('on');
+  try{
+    const photoBase64=await fileToBase64(fileInput.files[0]);
+    const data=await apiPost({
+      action:'adminUploadPortfolio', token:getToken(),
+      title, desc:G('pfDesc').value.trim(),
+      photoBase64, photoMime:fileInput.files[0].type||'image/jpeg'
+    });
+    charge.classList.remove('on'); btn.disabled=false;
+    if(isSessionError(data)){backToLogin('Сессия истекла — войдите заново');return;}
+    if(data.ok){
+      ok.textContent='✅ Фото добавлено в портфолио на сайте.'; ok.style.display='block';
+      G('pfTitle').value=''; G('pfDesc').value=''; fileInput.value='';
+      loadPortfolio();
+    }else{err.textContent=data.error||'Не удалось загрузить фото';err.style.display='block';}
+  }catch(e){charge.classList.remove('on');btn.disabled=false;err.textContent='Ошибка: '+e;err.style.display='block';}
+}
+async function loadPortfolio(){
+  const grid=G('pfGrid');
+  try{
+    const data=await apiGet({action:'adminPortfolio',token:getToken()});
+    if(isSessionError(data)){backToLogin('Сессия истекла — войдите заново');return;}
+    if(!data.ok){grid.innerHTML=`<div class="note n-r">${xe(data.error||'Не удалось загрузить портфолио')}</div>`;return;}
+    grid.innerHTML=(data.items||[]).map(p=>`
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;overflow:hidden">
+        <img src="${xe(p.photoUrl)}" style="width:100%;height:120px;object-fit:cover;display:block" loading="lazy">
+        <div style="padding:8px">
+          <div style="font-weight:700;font-size:12.5px">${xe(p.title)}</div>
+          <div class="small" style="margin:3px 0 8px">${p.status==='Показан'?'👁 Показан на сайте':'🚫 Скрыт'}</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <button class="bs" style="padding:5px 8px;font-size:11px" onclick="togglePortfolio('${xe(p.id)}',${p.status!=='Показан'})">${p.status==='Показан'?'Скрыть':'Показать'}</button>
+            <button class="br" style="padding:5px 8px;font-size:11px" onclick="deletePortfolio('${xe(p.id)}')">Удалить</button>
+          </div>
+        </div>
+      </div>`).join('')||`<div class="small">Портфолио пока пустое — загрузите первое фото выше.</div>`;
+  }catch(e){grid.innerHTML=`<div class="note n-r">Ошибка сети: ${xe(String(e))}</div>`;}
+}
+async function togglePortfolio(id,show){
+  const data=await apiPost({action:'adminTogglePortfolio',token:getToken(),id,show});
+  if(isSessionError(data)){backToLogin('Сессия истекла — войдите заново');return;}
+  loadPortfolio();
+}
+async function deletePortfolio(id){
+  if(!confirm('Удалить эту работу из портфолио?'))return;
+  const data=await apiPost({action:'adminDeletePortfolio',token:getToken(),id});
+  if(isSessionError(data)){backToLogin('Сессия истекла — войдите заново');return;}
+  loadPortfolio();
+}
+
+/* ══════════════════════════════════════
+   ОТЗЫВЫ — модерация — Этап 6
+══════════════════════════════════════ */
+async function loadReviews(){
+  const charge=G('revCharge'), err=G('revErr'), list=G('revList');
+  err.style.display='none'; charge.classList.add('on');
+  try{
+    const data=await apiGet({action:'adminReviews',token:getToken()});
+    charge.classList.remove('on');
+    if(isSessionError(data)){backToLogin('Сессия истекла — войдите заново');return;}
+    if(!data.ok){err.textContent=data.error||'Не удалось загрузить отзывы';err.style.display='block';return;}
+    const badge={'На модерации':'b-wait','Одобрен':'b-signed','Отклонён':'b-rejected'};
+    list.innerHTML=(data.items||[]).map(r=>`
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 14px">
+        <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap">
+          <div><b>${xe(r.name)}</b> · ${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)} <span class="small">${xe(r.date)}</span></div>
+          <span class="badge ${badge[r.status]||'b-draft'}">${xe(r.status)}</span>
+        </div>
+        <div style="margin-top:6px;font-size:13.5px">${xe(r.text)}</div>
+        <div class="brow">
+          ${r.status!=='Одобрен'?`<button class="bg" style="padding:6px 10px;font-size:12px" onclick="approveReview('${xe(r.id)}')">Одобрить</button>`:''}
+          ${r.status!=='Отклонён'?`<button class="br" style="padding:6px 10px;font-size:12px" onclick="rejectReview('${xe(r.id)}')">Отклонить</button>`:''}
+        </div>
+      </div>`).join('')||`<div class="small">Отзывов пока нет.</div>`;
+  }catch(e){charge.classList.remove('on');err.textContent='Ошибка сети: '+e;err.style.display='block';}
+}
+async function approveReview(id){
+  const data=await apiPost({action:'adminApproveReview',token:getToken(),id});
+  if(isSessionError(data)){backToLogin('Сессия истекла — войдите заново');return;}
+  loadReviews();
+}
+async function rejectReview(id){
+  const data=await apiPost({action:'adminRejectReview',token:getToken(),id});
+  if(isSessionError(data)){backToLogin('Сессия истекла — войдите заново');return;}
+  loadReviews();
+}
+
+/* ══════════════════════════════════════
+   PWA (Этап 4, ТЗ раздел 5)
+   Панель — внутренний инструмент одного человека (Исполнителя), поэтому
+   без i18n, как и остальной admin.html. Без офлайн-очереди: действия
+   панели (вход, подписать/отклонить, создать вручную) требуют живой
+   сессии и осознанного решения Исполнителя в моменте — слепой автоповтор
+   рискованнее, чем полезен (например, если за это время договор уже
+   отклонили через Telegram). Здесь — только понятный офлайн-баннер, как
+   и допускает п.5.3 ТЗ.
+══════════════════════════════════════ */
+
+/* Регистрация того же service-worker.js, что и у клиентской страницы,
+   но с явным scope:'./' (т.е. "/dogovor/admin/"), чтобы не расширять
+   его действие на всё приложение — оба scope безопасно уживаются
+   при одном физическом файле (см. комментарий в начале service-worker.js). */
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('../service-worker.js',{scope:'./'}).catch(()=>{});
+  });
+}
+
+let pwaDeferredPrompt=null;
+function pwaIsStandalone(){
+  return window.matchMedia('(display-mode: standalone)').matches || navigator.standalone===true;
+}
+function pwaIsIOS(){
+  return /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
+}
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault();
+  pwaDeferredPrompt=e;
+  if(!pwaIsStandalone()) G('pwaInstallBtn').classList.add('show');
+});
+window.addEventListener('appinstalled',()=>{
+  pwaDeferredPrompt=null;
+  G('pwaInstallBtn').classList.remove('show');
+});
+async function pwaInstallClick(){
+  if(pwaDeferredPrompt){
+    pwaDeferredPrompt.prompt();
+    try{ await pwaDeferredPrompt.userChoice; }catch(e){}
+    pwaDeferredPrompt=null;
+    G('pwaInstallBtn').classList.remove('show');
+    return;
+  }
+  if(pwaIsIOS()) alert('Чтобы установить: в Safari нажмите «Поделиться», затем «На экран «Домой»».');
+}
+requestAnimationFrame(()=>{
+  if(pwaIsIOS() && !pwaIsStandalone()) G('pwaInstallBtn').classList.add('show');
+});
+
+function pwaUpdateOfflineBanner(){
+  G('pwaOfflineBanner').classList.toggle('show',!navigator.onLine);
+}
+window.addEventListener('offline',pwaUpdateOfflineBanner);
+window.addEventListener('online',pwaUpdateOfflineBanner);
+pwaUpdateOfflineBanner();
+
+/* ══════════════════════════════════════
+   INIT
+══════════════════════════════════════ */
+requestAnimationFrame(()=>{
+  initMPad();
+  const t=getToken();
+  if(t){
+    G('loginCard').style.display='none';
+    G('panel').style.display='block';
+    loadList();
+  }
+});
+</script>
+</body>
+</html>

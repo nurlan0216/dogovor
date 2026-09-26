@@ -1,0 +1,22 @@
+{
+  "id": "/dogovor/admin/",
+  "name": "Панель Исполнителя — Договоры",
+  "short_name": "Панель",
+  "description": "Панель Исполнителя: список договоров на подпись, подписание/отклонение, ручное создание договора.",
+  "start_url": "./?pwa=1",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "portrait-primary",
+  "background_color": "#14171c",
+  "theme_color": "#14171c",
+  "lang": "ru",
+  "dir": "ltr",
+  "categories": ["business", "utilities"],
+  "icons": [
+    { "src": "../icons/icon-admin-any-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "../icons/icon-admin-any-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "../icons/icon-admin-maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "../icons/icon-admin-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

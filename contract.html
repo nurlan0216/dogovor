@@ -1,0 +1,1563 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Договор — Электромонтаж и Видеонаблюдение</title>
+
+<!-- ══════ PWA: манифест и иконки (ТЗ раздел 5, Этап 4) ══════
+     Файлы разместить рядом с этой страницей на GitHub Pages:
+     /dogovor/manifest.json, /dogovor/icons/*, /dogovor/service-worker.js
+     (см. ЭТАП4_ИЗМЕНЕНИЯ.md) -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#14171c">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/icon-client-32.png">
+<link rel="apple-touch-icon" href="icons/icon-client-apple-touch-180.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Договор">
+<style>
+:root{
+  --bg:#14171c;--bg2:#0f1115;--surface:#1c2027;--surface2:#242a33;
+  --border:#2b313c;--border2:#3a4150;
+  --text:#eef1f5;--mid:#9aa4b2;
+  --accent:#00d4ff;--accent-dim:rgba(0,212,255,.16);--accent-soft:rgba(0,212,255,.45);
+  --spark:#ffd60a;--green:#3ddc84;--red:#ff5c5c;--wa:#25D366;
+  --r:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Segoe UI',Arial,sans-serif;color:var(--text);
+  background:
+    radial-gradient(1100px 520px at 12% -8%, rgba(0,212,255,.10), transparent 60%),
+    radial-gradient(900px 460px at 100% 0%, rgba(255,214,10,.06), transparent 55%),
+    var(--bg);
+  min-height:100vh;
+}
+::selection{background:var(--accent);color:#08141a}
+.ic{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.8;flex:none;vertical-align:-3px}
+/* ─── LANG BAR ─── */
+.langbar{background:var(--bg2);padding:10px 20px;display:flex;justify-content:flex-end;align-items:center;gap:6px;position:sticky;top:0;z-index:999;border-bottom:1px solid var(--border)}
+.lb{border:1.5px solid var(--border2);border-radius:20px;padding:5px 14px;color:var(--mid);font-weight:700;font-size:13px;cursor:pointer;background:transparent;transition:.15s}
+.lb.on,.lb:hover{background:var(--accent);color:#08141a;border-color:var(--accent)}
+/* ─── PWA: установка приложения + офлайн-баннер (Этап 4, ТЗ раздел 5) ─── */
+.pwaInstall{display:none;align-items:center;gap:6px;margin-right:auto;border:1.5px solid var(--accent);border-radius:20px;
+  padding:5px 14px 5px 12px;color:var(--accent);font-weight:700;font-size:13px;cursor:pointer;background:var(--accent-dim);transition:.15s}
+.pwaInstall:hover{background:var(--accent);color:#08141a}
+.pwaInstall .ic{width:15px;height:15px}
+.pwaInstall.show{display:inline-flex}
+.pwaBanner{display:none;align-items:center;gap:8px;background:rgba(255,92,92,.14);color:var(--text);border-bottom:1px solid var(--red);
+  padding:8px 20px;font-size:12.5px;line-height:1.4;position:sticky;top:45px;z-index:998}
+.pwaBanner.show{display:flex}
+.pwaBanner .ic{color:var(--red);width:16px;height:16px}
+.pwaQueued{display:none;align-items:center;gap:8px;background:rgba(0,212,255,.12);color:var(--text);border-bottom:1px solid var(--accent);
+  padding:8px 20px;font-size:12.5px;line-height:1.4;position:sticky;top:45px;z-index:998}
+.pwaQueued.show{display:flex}
+.pwaQueued .ic{color:var(--accent);width:16px;height:16px}
+/* ─── TOP NAV (форма / статус) ─── */
+.topnav{max-width:1000px;margin:16px auto 0;padding:0 20px;display:flex;gap:8px}
+.tnb{flex:1;display:flex;align-items:center;justify-content:center;gap:7px;padding:11px 14px;border-radius:var(--r);
+  border:1.5px solid var(--border2);background:var(--surface);color:var(--mid);font-weight:700;font-size:13px;cursor:pointer;transition:.15s}
+.tnb.on{background:var(--accent-dim);border-color:var(--accent);color:var(--accent)}
+.tnb .ic{color:currentColor}
+/* ─── WRAP ─── */
+.wrap{max-width:1000px;margin:14px auto 24px;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:28px;box-shadow:0 10px 40px rgba(0,0,0,.45)}
+h1{font-size:21px;margin-bottom:6px;color:var(--text)}
+.sub{color:var(--mid);font-size:13px;margin-bottom:20px}
+/* ─── SECTION HEADER ("провод" с бегущим импульсом) ─── */
+.sh{position:relative;display:flex;align-items:center;gap:9px;font-size:14px;font-weight:700;color:var(--text);
+  border-bottom:2px solid var(--border);padding-bottom:8px;margin:24px 0 14px;overflow:hidden}
+.sh .ic{color:var(--accent);width:19px;height:19px}
+.sh::after{content:'';position:absolute;left:-40%;bottom:-2px;height:2px;width:40%;
+  background:linear-gradient(90deg,transparent,var(--accent) 45%,var(--spark) 55%,transparent);
+  animation:wireRun 3.6s linear infinite;filter:drop-shadow(0 0 4px var(--accent-soft))}
+@keyframes wireRun{0%{left:-40%}100%{left:100%}}
+/* ─── FORM ─── */
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.full{grid-column:1/-1}
+.f label{display:block;font-size:13px;font-weight:600;color:var(--mid);margin-bottom:4px}
+.f input,.f select,.f textarea{width:100%;padding:10px 12px;border:1.5px solid var(--border2);border-radius:var(--r);
+  font-size:14px;background:var(--surface2);color:var(--text);transition:.15s}
+.f input::placeholder,.f textarea::placeholder{color:#6b7280}
+.f input:focus,.f select:focus,.f textarea:focus{outline:none;border-color:var(--accent);background:#1f2530;
+  box-shadow:0 0 0 3px var(--accent-dim)}
+.f textarea{min-height:78px;resize:vertical}
+select[multiple]{height:115px}
+/* ─── TABLE ─── */
+.tbl{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}
+.tbl th,.tbl td{border:1px solid var(--border);padding:8px 9px;color:var(--text)}
+.tbl th{background:var(--surface2);font-weight:600;color:var(--mid)}
+.tbl td input,.tbl td select{border:1px solid var(--border2);border-radius:6px;padding:5px 7px;font-size:13px;background:var(--surface2);color:var(--text)}
+.tbl td input:focus,.tbl td select:focus{outline:none;border-color:var(--accent)}
+.tbl td input[type=number]{width:80px}
+.iname{width:100%;min-width:100px}
+.r{text-align:right;font-weight:600}
+.tfoot-row td{font-weight:700;background:var(--surface2);color:var(--accent)}
+/* ─── BUTTONS ("искра" на hover/focus) ─── */
+.brow{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+button{position:relative;display:inline-flex;align-items:center;gap:7px;padding:10px 17px;border:0;border-radius:var(--r);
+  cursor:pointer;font-size:13px;font-weight:600;transition:.15s;color:var(--text)}
+/* Ссылки-«кнопки» (a.bp/.bs/.bw и т.д.) получают тот же внешний вид, что и <button> */
+a.bp,a.bs,a.bg,a.bw{display:inline-flex;align-items:center;gap:7px;padding:10px 17px;border-radius:var(--r);
+  text-decoration:none;font-size:13px;font-weight:600;transition:.15s}
+.bp{background:var(--accent);color:#07161c}
+.bp:hover,.bp:focus-visible{animation:spark 1.1s ease-in-out infinite}
+.bs{background:var(--surface2);color:var(--text);border:1px solid var(--border2)}
+.bs:hover{background:#2c333e;border-color:var(--accent)}
+.bg{background:var(--green);color:#06241a}
+.bg:hover,.bg:focus-visible{animation:sparkGreen 1.1s ease-in-out infinite}
+.bw{background:var(--wa);color:#062018}
+.bw:hover{filter:brightness(1.08)}
+button:disabled{opacity:.35;cursor:not-allowed;animation:none!important}
+@keyframes spark{0%,100%{box-shadow:0 0 0 0 var(--accent-soft)}50%{box-shadow:0 0 14px 3px var(--accent-soft)}}
+@keyframes sparkGreen{0%,100%{box-shadow:0 0 0 0 rgba(61,220,132,.55)}50%{box-shadow:0 0 14px 3px rgba(61,220,132,.55)}}
+/* ─── CHARGE / LOADING BAR ("заряд") ─── */
+.charge{display:none;height:5px;border-radius:4px;background:var(--border);overflow:hidden;margin-top:10px}
+.charge.on{display:block}
+.charge i{display:block;height:100%;width:0;border-radius:4px;
+  background:linear-gradient(90deg,var(--accent),var(--spark));
+  box-shadow:0 0 8px var(--accent-soft);animation:chargeFill .8s ease forwards}
+@keyframes chargeFill{from{width:0}to{width:100%}}
+/* ─── SPARK FLASH (успешное действие, 2-3 коротких вспышки) ─── */
+.spark-flash{animation:sparkFlash 1.3s ease-out 1}
+@keyframes sparkFlash{
+  0%{box-shadow:0 0 0 0 rgba(61,220,132,0)}
+  15%{box-shadow:0 0 26px 6px rgba(61,220,132,.65)}
+  35%{box-shadow:0 0 4px 0 rgba(61,220,132,.15)}
+  55%{box-shadow:0 0 22px 5px rgba(61,220,132,.55)}
+  100%{box-shadow:0 0 0 0 rgba(61,220,132,0)}
+}
+@media (prefers-reduced-motion: reduce){
+  .sh::after,.bp:hover,.bp:focus-visible,.bg:hover,.bg:focus-visible,.spark-flash,.charge i{animation:none!important}
+}
+/* ─── NOTE ─── */
+.note{padding:11px 15px;border-radius:var(--r);font-size:13px;margin:12px 0;line-height:1.5;border:1px solid var(--border)}
+.n-y{background:rgba(255,214,10,.08);border-left:4px solid var(--spark)}
+.n-g{background:rgba(61,220,132,.08);border-left:4px solid var(--green)}
+.n-b{background:var(--accent-dim);border-left:4px solid var(--accent)}
+/* ─── CONTRACT (лист бумаги поверх тёмного интерфейса) ─── */
+.contract:not(:empty){margin-top:26px;padding:26px 30px;line-height:1.62;font-size:14px;
+  background:#fff;color:#1a1d22;border-radius:10px;box-shadow:0 14px 40px rgba(0,0,0,.45)}
+.contract h2{text-align:center;font-size:17px;margin-bottom:3px}
+.contract p{margin:7px 0}
+.contract table{width:100%;border-collapse:collapse;margin:9px 0;font-size:13px}
+.contract th,.contract td{border:1px solid #ddd;padding:7px 9px}
+.contract th{background:#f3f5f7;font-weight:600}
+/* ─── SIGNATURES ─── */
+.sigwrap{margin-top:24px;border:1.5px solid var(--border);border-radius:12px;padding:22px;background:var(--surface2)}
+.sigwrap h3{font-size:16px;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.sigwrap h3 .ic{color:var(--spark);width:19px;height:19px}
+.siggrid{display:grid;grid-template-columns:1fr;max-width:100%;gap:18px;margin-top:14px}
+.sigbox{position:relative;background:var(--surface);border:1.5px solid var(--border2);border-radius:var(--r);padding:15px}
+.sigbox h4{font-size:13px;color:var(--mid);margin-bottom:9px}
+/* ─── SIGN OVERLAY (Задача 5: спиннер + текст на время фиксации подписи) ─── */
+.signOverlay{display:none;position:absolute;inset:0;z-index:5;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:rgba(15,18,23,.72);backdrop-filter:blur(1px);border-radius:var(--r);text-align:center;padding:0 16px}
+.signOverlay.on{display:flex}
+.signSpinner{width:34px;height:34px;border-radius:50%;border:3px solid var(--border2);border-top-color:var(--accent);animation:signSpin .8s linear infinite}
+.signOverlayTxt{font-size:13px;font-weight:600;color:var(--text);line-height:1.5}
+@keyframes signSpin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion: reduce){.signSpinner{animation:none;border-top-color:var(--border2)}}
+@media(max-width:440px){
+  /* Задача 6: на мобильном — только иконки шагов, без подписей */
+  .stepLabel{display:none}
+  .stepIcon{width:26px;height:26px;font-size:12px}
+  .step:not(:last-child)::after{left:calc(50% + 18px);width:calc(100% - 36px);top:13px}
+}
+/* KEY FIX: canvas must have fixed CSS height, width 100% of its wrapper.
+   Задача 4: минимум 50vw ширины / 220px высоты, центрировано на экране. */
+.padwrap{position:relative;width:50vw;max-width:100%;margin:0 auto}
+canvas.pad{display:block;width:100%;height:220px;border:2px dashed var(--border2);border-radius:8px;touch-action:none;background:#f9fbff;cursor:crosshair}
+canvas.pad.ok{border:2px solid var(--green);background:#f3fff8}
+.padph{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;color:var(--mid);font-size:13px;line-height:1.5;text-align:center;padding:0 14px;user-select:none;max-width:90%}
+.sts{font-size:12px;color:var(--mid);margin-top:6px;min-height:18px}
+.sts.ok{color:var(--green);font-weight:700}
+.sbrow{display:flex;gap:6px;margin-top:8px}
+.sbrow button{font-size:12px;padding:7px 12px}
+/* ─── ACTION BAR ─── */
+.actbar{display:none;margin-top:18px;background:rgba(61,220,132,.08);border:1.5px solid var(--green);border-radius:12px;padding:18px}
+.actbar .dmsg{font-size:15px;font-weight:700;color:var(--green);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.stamp{background:var(--accent-dim);border:1px solid var(--border);padding:11px 14px;border-radius:8px;font-size:12px;color:var(--text);margin-top:12px;line-height:1.7}
+/* ─── DOC NUMBER BOX (Задача 7: крупное уведомление с номером договора) ─── */
+.docNumBox{display:none;margin-top:14px;padding:18px 16px;border-radius:12px;background:var(--accent-dim);border:1.5px solid var(--accent);text-align:center}
+.docNumBox.on{display:block}
+.docNumLabel{font-size:12px;font-weight:700;color:var(--mid);letter-spacing:.03em;text-transform:uppercase;margin-bottom:8px}
+.docNumBig{font-size:28px;font-weight:800;color:var(--accent);letter-spacing:.01em;word-break:break-all;
+  margin-bottom:14px;text-shadow:0 0 18px var(--accent-soft)}
+.docNumBox .brow{justify-content:center}
+@media(max-width:440px){.docNumBig{font-size:21px}}
+/* ─── AUTO-RETURN (Задача 9: обратный отсчёт возврата на главную) ─── */
+.autoReturn{display:none;margin-top:12px;padding:11px 15px;border-radius:var(--r);font-size:13px;
+  background:var(--surface);border:1px solid var(--border2);color:var(--mid);text-align:center;
+  align-items:center;justify-content:center;gap:10px;flex-wrap:wrap}
+.autoReturn.on{display:flex}
+.autoReturn b{color:var(--text)}
+/* ─── STEPPER (Задача 6: статус-бар прогресса отправки Исполнителю) ─── */
+.stepper{display:none;gap:4px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+.stepper.on{display:flex}
+.step{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;position:relative}
+.step:not(:last-child)::after{content:'';position:absolute;top:15px;left:calc(50% + 21px);width:calc(100% - 42px);height:2px;background:var(--border2);z-index:0;transition:.3s}
+.step.done:not(:last-child)::after{background:var(--green)}
+.stepIcon{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:14px;line-height:1;background:var(--surface);border:2px solid var(--border2);color:var(--mid);
+  transition:.25s;position:relative;z-index:1;flex:none}
+.stepLabel{font-size:11px;color:var(--mid);font-weight:600;line-height:1.3;transition:.25s;overflow-wrap:anywhere}
+.step.active .stepIcon{border-color:var(--accent);color:var(--accent);background:var(--accent-dim);
+  animation:stepPulse 1.1s ease-in-out infinite}
+.step.active .stepLabel{color:var(--accent)}
+.step.done .stepIcon{border-color:var(--green);color:var(--green);background:rgba(61,220,132,.12)}
+.step.done .stepLabel{color:var(--green)}
+@keyframes stepPulse{0%,100%{box-shadow:0 0 0 0 var(--accent-soft)}50%{box-shadow:0 0 10px 2px var(--accent-soft)}}
+@media (prefers-reduced-motion: reduce){.step.active .stepIcon{animation:none}}
+/* ─── PRINT: без анимаций и ярких цветов (раздел 7.5 ТЗ) ─── */
+@media print{
+  .langbar,.noprint,.charge{display:none!important}
+  body{background:#fff!important}
+  .wrap{box-shadow:none;margin:0;max-width:none;padding:12px;background:#fff!important;border:0}
+  .sh{border-bottom:1px solid #000;color:#000}
+  .sh::after{display:none!important}
+  .contract:not(:empty){box-shadow:none;padding:0}
+  *{animation:none!important;box-shadow:none!important}
+  canvas.pad{border:1px solid #ccc}
+  .padph,.signOverlay{display:none!important}
+}
+@media(max-width:680px){.grid,.siggrid{grid-template-columns:1fr}.wrap{margin:0;border-radius:0;padding:14px}}
+</style>
+<link rel="stylesheet" href="site-mobile.css">
+<script src="site-language.js"></script>
+<script defer src="contract-preview.js"></script>
+</head>
+<body>
+
+<!-- ══════════════ ИКОНКИ (тема: электромонтаж/видеонаблюдение) ══════════════ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<defs>
+  <symbol id="i-bolt" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z"/></symbol>
+  <symbol id="i-cable" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6c3 0 3 4 6 4s3-4 6-4 3 4 6 4M4 6v4m16-4v4"/></symbol>
+  <symbol id="i-panel" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="1.5"/><path stroke-linecap="round" d="M8 8h8M8 12h8M8 16h5"/></symbol>
+  <symbol id="i-camera" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8h11l3-2h2v10h-2l-3-2H3z"/><circle cx="9" cy="12" r="2.2"/></symbol>
+  <symbol id="i-tool" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m14.7 6.3 3 3-7.4 7.4-4-1-1-4 7.4-7.4Z"/><path stroke-linecap="round" d="M17 3.5 20.5 7 19 8.5l-3.5-3.5Z"/></symbol>
+  <symbol id="i-sign" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 20c3-1 4-3 5-5l9-9 3 3-9 9c-2 1-4 2-5 5"/><path stroke-linecap="round" d="M3 20h18"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v12m0 0-4-4m4 4 4-4M4 19h16"/></symbol>
+  <symbol id="i-print" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 9V3h12v6M6 18h12v3H6v-3ZM4 9h16v7H4z"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path stroke-linecap="round" d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-clear" viewBox="0 0 24 24"><path stroke-linecap="round" d="M6 6l12 12M18 6 6 18"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path stroke-linecap="round" d="M3 12h18M12 3c2.5 2.5 4 5.7 4 9s-1.5 6.5-4 9c-2.5-2.5-4-5.7-4-9s1.5-6.5 4-9Z"/></symbol>
+  <symbol id="i-chat" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 12a8 8 0 1 1 3.5 6.6L4 20l1.4-3.5A7.96 7.96 0 0 1 4 12Z"/></symbol>
+  <symbol id="i-offline" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3l18 18M8.5 8.7A9.9 9.9 0 0 1 12 8c3 0 5.7 1.1 7.8 3M5 11.5A13 13 0 0 1 8 9.4M2 8.8A16 16 0 0 1 6 6"/><path stroke-linecap="round" d="M9 15.3a5 5 0 0 1 6 0M12 19h.01"/></symbol>
+  <symbol id="i-install" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="14" rx="1.5"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 21h6M12 6v6m0 0-2.3-2.3M12 12l2.3-2.3"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="1.5"/><path stroke-linecap="round" stroke-linejoin="round" d="M4 16V5a1 1 0 0 1 1-1h11"/></symbol>
+</defs>
+</svg>
+
+
+
+<div class="langbar noprint site-has-lang">
+  <button class="pwaInstall" id="pwaInstallBtn" onclick="pwaInstallClick()"><svg class="ic" viewBox="0 0 24 24"><use href="#i-install"/></svg><span id="xPwaInstall"></span></button>
+  <svg class="ic" viewBox="0 0 24 24" style="color:var(--mid);margin-right:2px"><use href="#i-globe"/></svg>
+  <button class="lb" onclick="setLang('kz')">ҚАЗ</button>
+  <button class="lb" onclick="setLang('ru')">РУС</button>
+  <button class="lb" onclick="setLang('en')">ENG</button>
+</div>
+<div class="pwaBanner noprint" id="pwaOfflineBanner"><svg class="ic" viewBox="0 0 24 24"><use href="#i-offline"/></svg><span id="xPwaOffline"></span></div>
+<div class="pwaQueued noprint" id="pwaQueuedBanner"><svg class="ic" viewBox="0 0 24 24"><use href="#i-bolt"/></svg><span id="xPwaQueued"></span></div>
+
+<div class="topnav noprint">
+  <button class="tnb on" id="navForm" onclick="showScreen('form')"><svg class="ic" viewBox="0 0 24 24"><use href="#i-tool"/></svg><span id="xNav_form"></span></button>
+  <button class="tnb" id="navStatus" onclick="showScreen('status')"><svg class="ic" viewBox="0 0 24 24"><use href="#i-sign"/></svg><span id="xNav_status"></span></button>
+</div>
+
+<div class="wrap" id="screenForm">
+
+<!-- ══════════════ FORM ══════════════ -->
+<div id="frmSec" class="noprint">
+  <h1 id="xT"></h1>
+  <p class="sub" id="xD"></p>
+
+  <div class="sh"><svg class="ic" viewBox="0 0 24 24"><use href="#i-tool"/></svg><span id="xS1"></span></div>
+  <div class="grid">
+    <div class="f"><label id="xL_type"></label><select id="type">
+      <option value="ФЛ" id="xO_fl"></option>
+      <option value="ИП" id="xO_ip"></option>
+      <option value="ТОО" id="xO_too"></option>
+    </select></div>
+    <div class="f"><label id="xL_num"></label><input id="num" value="" readonly placeholder="Автоматически / Automatic"></div>
+    <div class="f"><label id="xL_cust"></label><input id="customer"></div>
+    <div class="f"><label id="xL_iin"></label><input id="iin"></div>
+    <div class="f"><label id="xL_phone"></label><input id="phone" type="tel" placeholder="+7 700 000-00-00"></div>
+    <div class="f"><label id="xL_email"></label><input id="email" type="email"></div>
+    <div class="f"><label id="xL_docNum"></label><input id="docNum" placeholder="123456789"></div>
+    <div class="f"><label id="xL_docBy"></label><input id="docBy" placeholder="МВД РК / ЦОН"></div>
+    <div class="f"><label id="xL_docDate"></label><input id="docDate" type="date"></div>
+    <div class="f full"><label id="xL_addr"></label><input id="objectAddress"></div>
+  </div>
+
+  <div class="sh"><svg class="ic" viewBox="0 0 24 24"><use href="#i-cable"/></svg><span id="xS2"></span></div>
+  <div class="grid">
+    <div class="f full"><label id="xL_wt"></label>
+      <select id="workType" multiple>
+        <option id="xO_w1"></option><option id="xO_w2"></option>
+        <option id="xO_w3"></option><option id="xO_w4"></option><option id="xO_w5"></option>
+      </select>
+    </div>
+    <div class="f full"><label id="xL_task"></label>
+      <textarea id="task"></textarea>
+    </div>
+  </div>
+
+  <div class="sh"><svg class="ic" viewBox="0 0 24 24"><use href="#i-panel"/></svg><span id="xS3"></span></div>
+  <div class="grid">
+    <div class="f"><label id="xL_mats"></label>
+      <select id="materials">
+        <option value="customer" id="xO_mc"></option>
+        <option value="contractor" id="xO_mi"></option>
+        <option value="mixed" id="xO_mm"></option>
+      </select>
+    </div>
+    <div class="f"><label id="xL_warr"></label><input id="warranty" type="number" value="12" min="0"></div>
+    <div class="f"><label id="xL_sd"></label><input id="start" type="date"></div>
+    <div class="f"><label id="xL_ed"></label><input id="end" type="date"></div>
+    <div class="f"><label id="xL_tot"></label><input id="total" type="number" min="0" value="0"></div>
+    <div class="f"><label id="xL_paid"></label><input id="paid" type="number" min="0" value="0"></div>
+    <div class="f"><label id="xL_bal"></label><input id="balance" readonly style="background:#f5f5f5;color:#1a1d22;font-weight:700"></div>
+    <div class="f"><label id="xL_pay"></label>
+      <select id="payment">
+        <option id="xO_p1"></option><option id="xO_p2" selected></option>
+        <option id="xO_p3"></option><option id="xO_p4"></option>
+      </select>
+    </div>
+  </div>
+
+  <div class="sh"><svg class="ic" viewBox="0 0 24 24"><use href="#i-camera"/></svg><span id="xS4"></span></div>
+  <div style="overflow-x:auto">
+  <table class="tbl">
+    <thead><tr>
+      <th style="width:30px">#</th>
+      <th id="xH_n"></th><th id="xH_u" style="width:70px"></th>
+      <th id="xH_q" style="width:80px"></th><th id="xH_p" style="width:100px"></th>
+      <th id="xH_s" style="width:110px"></th><th style="width:30px"></th>
+    </tr></thead>
+    <tbody id="tbody"></tbody>
+    <tfoot><tr class="tfoot-row">
+      <td colspan="5" class="r" id="xTotLbl"></td>
+      <td class="r" id="specTot">0</td><td></td>
+    </tr></tfoot>
+  </table>
+  </div>
+  <div class="brow">
+    <button class="bs" onclick="addRow()"><svg class="ic" viewBox="0 0 24 24"><use href="#i-plus"/></svg><span id="xB_add"></span></button>
+    <button class="bp" onclick="makeContract()"><svg class="ic" viewBox="0 0 24 24"><use href="#i-bolt"/></svg><span id="xB_gen"></span></button>
+    <button class="bs" onclick="window.print()"><svg class="ic" viewBox="0 0 24 24"><use href="#i-print"/></svg><span id="xB_prn"></span></button>
+  </div>
+  <div class="charge noprint" id="genCharge"><i></i></div>
+</div><!-- /frmSec -->
+
+<!-- ══════════════ CONTRACT ══════════════ -->
+<div id="contract" class="contract" data-no-translate></div>
+
+<!-- ══════════════ SIGNATURE (только Заказчик — Исполнитель подтверждает удалённо, см. ТЗ раздел 3) ══════════════ -->
+<div class="sigwrap noprint" id="sigSec" style="display:none">
+  <h3><svg class="ic" viewBox="0 0 24 24"><use href="#i-sign"/></svg><span id="xSG_title"></span></h3>
+  <div class="note n-g" id="xSG_note"></div>
+  <div class="siggrid">
+    <div class="sigbox">
+      <h4 id="xSG_ct"></h4>
+      <!-- width/height set by JS initPad -->
+      <div class="padwrap">
+        <canvas class="pad" id="cCanvas"></canvas>
+        <div class="padph" id="cPadPh" aria-hidden="true">Подпишите здесь / Қол қойыңыз / Sign here</div>
+      </div>
+      <div class="sts" id="cSts"></div>
+      <label style="display:flex;gap:8px;align-items:flex-start;font-size:12px;color:var(--mid);margin-top:10px;cursor:pointer">
+        <input type="checkbox" id="consentChk" style="margin-top:3px;flex:none">
+        <span id="xConsentLbl"></span>
+      </label>
+      <div class="sbrow">
+        <button class="bp" id="cBtn" onclick="doSign()"><svg class="ic" viewBox="0 0 24 24"><use href="#i-sign"/></svg><span id="cBtnLbl"></span></button>
+        <button class="bs" onclick="clearPad()"><svg class="ic" viewBox="0 0 24 24"><use href="#i-clear"/></svg><span class="lbl"></span></button>
+      </div>
+      <!-- Задача 5: оверлей со спиннером на время фиксации подписи -->
+      <div class="signOverlay" id="signOverlay" aria-hidden="true">
+        <div class="signSpinner"></div>
+        <div class="signOverlayTxt">Фиксируем подпись... / Қолды тіркеп жатырмыз... / Saving signature...</div>
+      </div>
+      <div class="charge" id="cCharge"><i></i></div>
+    </div>
+  </div>
+  <div class="actbar" id="actBar">
+    <div class="dmsg"><svg class="ic" viewBox="0 0 24 24"><use href="#i-bolt"/></svg><span id="xAB_msg"></span></div>
+    <div class="brow" id="sendRow">
+      <button class="bs" onclick="window.print()"><svg class="ic" viewBox="0 0 24 24"><use href="#i-print"/></svg><span id="xAB_pr"></span></button>
+    </div>
+    <div class="charge" id="sendCharge"><i></i></div>
+    <!-- Задача 6: статус-бар прогресса отправки -->
+    <div class="stepper noprint" id="sendStepper">
+      <div class="step" id="step1" data-step="1"><div class="stepIcon">📋</div><div class="stepLabel" id="xStep1"></div></div>
+      <div class="step" id="step2" data-step="2"><div class="stepIcon">💾</div><div class="stepLabel" id="xStep2"></div></div>
+      <div class="step" id="step3" data-step="3"><div class="stepIcon">📤</div><div class="stepLabel" id="xStep3"></div></div>
+      <div class="step" id="step4" data-step="4"><div class="stepIcon">✅</div><div class="stepLabel" id="xStep4"></div></div>
+    </div>
+    <div class="note n-b" id="sendErr" style="display:none"></div>
+    <!-- отправка теперь автоматическая (сразу после подписи); кнопка повтора — только если отправка не удалась -->
+    <button class="bs noprint" id="retryBtn" style="display:none;margin-top:2px" onclick="submitToServer()"><svg class="ic" viewBox="0 0 24 24"><use href="#i-bolt"/></svg><span id="xAB_retry"></span></button>
+    <div class="stamp" id="stampTxt" style="display:none"></div>
+    <!-- Задача 7: крупный блок с номером договора + копирование + переход к статусу -->
+    <div class="docNumBox noprint" id="docNumBox">
+      <div class="docNumLabel" id="xDocNumLbl"></div>
+      <div class="docNumBig" id="docNumBig"></div>
+      <div class="brow">
+        <button class="bs" id="copyDocBtn" onclick="copyDocId()"><svg class="ic" viewBox="0 0 24 24"><use href="#i-copy"/></svg><span id="xCopyDocBtn"></span></button>
+        <button class="bp" onclick="goCheckStatus()"><svg class="ic" viewBox="0 0 24 24"><use href="#i-sign"/></svg><span id="xCheckStatusBtn"></span></button>
+      </div>
+    </div>
+    <div class="brow" id="shareBox" style="display:none"></div>
+    <!-- Задача 9: автовозврат на главную через 30 сек после успешной отправки -->
+    <div class="autoReturn noprint" id="autoReturnBox">
+      <span id="xAutoReturnTxt"></span>
+      <button class="bs" onclick="autoReturnNow()"><span id="xAutoReturnBtn"></span></button>
+    </div>
+  </div>
+</div>
+
+</div><!-- /screenForm -->
+
+<!-- ══════════════ КАБИНЕТ КЛИЕНТА: проверка статуса (ТЗ раздел 4) ══════════════ -->
+<div class="wrap noprint" id="screenStatus" style="display:none">
+  <h1 id="xST_t"></h1>
+  <p class="sub" id="xST_d"></p>
+  <div class="grid">
+    <div class="f"><label id="xST_L_num"></label><input id="stDocId" placeholder="DOC-1234567890"></div>
+    <div class="f"><label id="xST_L_ph4"></label><input id="stPhone4" maxlength="4" inputmode="numeric" placeholder="1234"></div>
+  </div>
+  <div class="brow">
+    <button class="bp" onclick="checkStatus()"><svg class="ic" viewBox="0 0 24 24"><use href="#i-bolt"/></svg><span id="xST_btn"></span></button>
+  </div>
+  <div class="charge" id="stCharge"><i></i></div>
+  <div id="stResult"></div>
+  <div class="brow" id="statusShare"></div>
+</div>
+
+
+
+<script>
+/* ══════════════════════════════════════
+   TRANSLATIONS
+══════════════════════════════════════ */
+const TR={
+ru:{
+  T:'Онлайн-договор: электромонтаж и видеонаблюдение',
+  D:'Заполните форму, проверьте текст договора и поставьте подпись. Договор уйдёт Исполнителю на подтверждение — статус можно проверить в разделе «Проверить статус».',
+  Nav_form:'Оформить договор',Nav_status:'Проверить статус',
+  S1:'Данные заказчика',S2:'Виды работ',S3:'Условия',S4:'Спецификация работ и материалов',
+  L_type:'Тип заказчика',L_num:'№ договора',L_cust:'ФИО / Наименование',L_iin:'ИИН / БИН',
+  L_phone:'Телефон',L_email:'E-mail',L_addr:'Адрес объекта',L_wt:'Виды работ (можно несколько)',
+  L_docNum:'Номер удостоверения личности',L_docBy:'Кем выдано',L_docDate:'Дата выдачи',
+  L_task:'Техническое задание / описание',L_mats:'Кто покупает материалы',L_warr:'Гарантия (мес.)',
+  L_sd:'Дата начала',L_ed:'Дата окончания',L_tot:'Стоимость работ, ₸',L_paid:'Аванс, ₸',
+  L_bal:'Остаток, ₸',L_pay:'Порядок оплаты',
+  H_n:'Наименование',H_u:'Ед.',H_q:'Кол-во',H_p:'Цена ₸',H_s:'Сумма ₸',TotLbl:'Итого:',
+  O_fl:'Физическое лицо',O_ip:'ИП',O_too:'ТОО / АО',
+  O_w1:'Электромонтажные работы',O_w2:'Монтаж видеонаблюдения',O_w3:'Электроснабжение / Щит',
+  O_w4:'Освещение, розетки, выключатели',O_w5:'Диагностика / Ремонт',
+  O_mc:'Заказчик',O_mi:'Исполнитель',O_mm:'Смешанный вариант',
+  O_p1:'100% предоплата',O_p2:'Аванс + окончательный расчёт',O_p3:'Поэтапная оплата',O_p4:'После выполнения',
+  B_add:'Добавить позицию',B_gen:'Сформировать договор',B_prn:'Печать',
+  SG_title:'Подпись Заказчика',
+  SG_note:'Нарисуйте подпись пальцем (телефон) или мышью (ПК) и нажмите «Подписать». После этого договор можно отправить Исполнителю на подтверждение.',
+  SG_ct:'Подпись Заказчика',
+  Sts_empty:'Не подписан',Sts_ok:t=>`✅ Подписано: ${t}`,B_sign:'Подписать',B_clr:'Очистить',
+  AB_msg:'Подпись зафиксирована. Договор автоматически отправляется Исполнителю на подтверждение…',
+  AB_pr:'Распечатать',AB_retry:'Повторить отправку',
+  Sending:'Отправка…',
+  Step1:'Формируем договор',Step2:'Записываем данные',Step3:'Отправляем исполнителю',Step4:'Готово',
+  DocNumLbl:'Номер вашего договора',CopyDocBtn:'Скопировать номер',CopyDocOk:'Скопировано ✓',
+  CheckStatusBtn:'Проверить статус',
+  AutoReturnMsg:s=>`Возврат на главную через ${s} сек`,AutoReturnBtn:'Вернуться сейчас',
+  SendOk:id=>`✅ Договор № ${id} отправлен Исполнителю. Уведомление ушло в Telegram и на панель /admin. Как только Исполнитель подтвердит — на почту придёт подписанный PDF. Статус можно проверить в разделе «Проверить статус» по этому номеру и последним 4 цифрам телефона.`,
+  SendErr:m=>`Не удалось отправить: ${m}`,
+  Confirm:'Нажмите ОК для фиксации подписи. Изменить нельзя.',
+  NoSig:'Сначала нарисуйте подпись',
+  SigIn:'Подпись: _________________',
+  ST_t:'Проверить статус договора',
+  ST_d:'Введите номер договора и последние 4 цифры телефона, указанного при оформлении.',
+  ST_L_num:'Номер договора',ST_L_ph4:'Последние 4 цифры телефона',ST_btn:'Проверить',
+  ST_notfound:'Договор с таким номером не найден',
+  ST_mismatch:'Номер договора или последние 4 цифры телефона не совпадают',
+  ST_sentAt:'Отправлен:',ST_signedAt:'Подписан Исполнителем:',ST_dl:'Скачать подписанный договор',
+  ST_status:{'Черновик':'Черновик','На подписи':'На подписи у Исполнителя','Подписан':'Подписан','Отклонён':'Отклонён Исполнителем'},
+  Mat:{customer:'Заказчик',contractor:'Исполнитель',mixed:'Смешанный вариант'},
+  ConsentLbl:'Я ознакомлен(а) с условиями договора (в т.ч. разделом 5 о простой электронной подписи и разделом 6 о персональных данных) и даю согласие на их обработку и на электронное подписание.',
+  NoConsent:'Отметьте согласие с условиями договора и обработкой персональных данных',
+  Err_customer:'Укажите ФИО / наименование заказчика',
+  Err_iin:'ИИН/БИН должен содержать 12 цифр',
+  Err_email:'Укажите корректный e-mail',
+  Err_phone:'Укажите телефон заказчика',
+  Err_docNum:'Укажите номер удостоверения личности',
+  Err_docBy:'Укажите, кем выдано удостоверение личности',
+  Err_docDate:'Укажите дату выдачи удостоверения личности',
+  Err_total:'Укажите стоимость работ',
+  ST_needBoth:'Введите номер договора и 4 цифры телефона',
+  Pwa_install:'Установить приложение',
+  Pwa_offline:'Нет соединения с интернетом. Форму можно заполнить и посмотреть, отправка станет доступна снова, когда появится сеть.',
+  Pwa_queued:'Договор сохранён на этом устройстве и будет отправлен автоматически, как только появится интернет.',
+  Pwa_queuedSent:'Соединение восстановлено — сохранённый договор отправляется…',
+  Pwa_iosHint:'Чтобы установить: в Safari нажмите «Поделиться», затем «На экран «Домой»».',
+},
+kz:{
+  T:'Онлайн-шарт: электр монтаж және бейнебақылау',
+  D:'Нысанды толтырыңыз, шарт мәтінін тексеріп, қол қойыңыз. Шарт Орындаушыға растауға жіберіледі — мәртебені «Мәртебені тексеру» бөлімінен қарауға болады.',
+  Nav_form:'Шарт рәсімдеу',Nav_status:'Мәртебені тексеру',
+  S1:'Тапсырыс берушінің деректері',S2:'Жұмыс түрлері',S3:'Шарт шарттары',S4:'Жұмыстар мен материалдардың спецификациясы',
+  L_type:'Тапсырыс берушінің түрі',L_num:'Шарт №',L_cust:'АТЖ / Атауы',L_iin:'ЖСН / БСН',
+  L_phone:'Телефон',L_email:'E-mail',L_addr:'Объект мекенжайы',L_wt:'Жұмыс түрлері',
+  L_docNum:'Жеке куәлік нөмірі',L_docBy:'Кім берген',L_docDate:'Берілген күні',
+  L_task:'Техникалық тапсырма',L_mats:'Материалдарды кім сатып алады',L_warr:'Кепілдік (ай)',
+  L_sd:'Басталу күні',L_ed:'Аяқталу күні',L_tot:'Жұмыс құны, ₸',L_paid:'Аванс, ₸',
+  L_bal:'Қалдық, ₸',L_pay:'Төлем тәртібі',
+  H_n:'Атауы',H_u:'Бірл.',H_q:'Саны',H_p:'Бағасы ₸',H_s:'Сомасы ₸',TotLbl:'Жиыны:',
+  O_fl:'Жеке тұлға',O_ip:'ЖК',O_too:'ЖШС / АҚ',
+  O_w1:'Электр монтаж жұмыстары',O_w2:'Бейнебақылау жүйесі',O_w3:'Электрмен жабдықтау',
+  O_w4:'Жарықтандыру, розеткалар',O_w5:'Диагностика / Жөндеу',
+  O_mc:'Тапсырыс беруші',O_mi:'Орындаушы',O_mm:'Аралас нұсқа',
+  O_p1:'100% алдын ала',O_p2:'Аванс + соңғы есеп',O_p3:'Кезеңдік',O_p4:'Аяқталғаннан кейін',
+  B_add:'Позиция қосу',B_gen:'Шарт қалыптастыру',B_prn:'Басып шығару',
+  SG_title:'Тапсырыс берушінің қолы',
+  SG_note:'Қолды саусақпен (телефон) немесе тышқанмен (ДК) салып, «Қол қою» басыңыз. Одан кейін шартты Орындаушыға растауға жіберуге болады.',
+  SG_ct:'Тапсырыс берушінің қолы',
+  Sts_empty:'Қол қойылмаған',Sts_ok:t=>`✅ Қол қойылды: ${t}`,B_sign:'Қол қою',B_clr:'Тазалау',
+  AB_msg:'Қол тіркелді. Шарт автоматты түрде Орындаушыға растауға жіберілуде…',
+  AB_pr:'Басып шығару',AB_retry:'Қайта жіберу',
+  Sending:'Жіберілуде…',
+  Step1:'Шартты қалыптастырамыз',Step2:'Деректерді жазамыз',Step3:'Орындаушыға жібереміз',Step4:'Дайын',
+  DocNumLbl:'Сіздің шартыңыздың нөмірі',CopyDocBtn:'Нөмірді көшіру',CopyDocOk:'Көшірілді ✓',
+  CheckStatusBtn:'Мәртебені тексеру',
+  AutoReturnMsg:s=>`Басты бетке қайту: ${s} сек қалды`,AutoReturnBtn:'Қазір қайту',
+  SendOk:id=>`✅ № ${id} шарты Орындаушыға жіберілді. Telegram-ға және /admin панеліне хабарлама кетті. Орындаушы растағаннан кейін поштаңызға қол қойылған PDF келеді. Мәртебені осы нөмір және телефонның соңғы 4 саны бойынша «Мәртебені тексеру» бөлімінен қарауға болады.`,
+  SendErr:m=>`Жіберілмеді: ${m}`,
+  Confirm:'OK басыңыз — қол тіркеледі. Өзгерту мүмкін емес.',
+  NoSig:'Алдымен қолыңызды салыңыз',
+  SigIn:'Қол: _________________',
+  ST_t:'Шарт мәртебесін тексеру',
+  ST_d:'Шарт нөмірі мен рәсімдеу кезінде көрсетілген телефонның соңғы 4 санын енгізіңіз.',
+  ST_L_num:'Шарт нөмірі',ST_L_ph4:'Телефонның соңғы 4 саны',ST_btn:'Тексеру',
+  ST_notfound:'Мұндай нөмірмен шарт табылмады',
+  ST_mismatch:'Шарт нөмірі немесе телефонның соңғы 4 саны сәйкес келмейді',
+  ST_sentAt:'Жіберілген:',ST_signedAt:'Орындаушы қол қойған:',ST_dl:'Қол қойылған шартты жүктеу',
+  ST_status:{'Черновик':'Жоба','На подписи':'Орындаушыда қол қоюда','Подписан':'Қол қойылды','Отклонён':'Орындаушы қабылдамады'},
+  Mat:{customer:'Тапсырыс беруші',contractor:'Орындаушы',mixed:'Аралас нұсқа'},
+  ConsentLbl:'Шарт талаптарымен (соның ішінде 5-бөлім — жай электрондық қолтаңба, 6-бөлім — жеке деректер) таныстым және оларды өңдеуге және электрондық қол қоюға келісім беремін.',
+  NoConsent:'Шарт талаптары мен жеке деректерді өңдеуге келісіміңізді белгілеңіз',
+  Err_customer:'Тапсырыс берушінің АТЖ / атауын енгізіңіз',
+  Err_iin:'ЖСН/БСН 12 санды құрауы керек',
+  Err_email:'Дұрыс e-mail енгізіңіз',
+  Err_phone:'Тапсырыс берушінің телефонын енгізіңіз',
+  Err_docNum:'Жеке куәлік нөмірін енгізіңіз',
+  Err_docBy:'Жеке куәлікті кім бергенін көрсетіңіз',
+  Err_docDate:'Жеке куәліктің берілген күнін көрсетіңіз',
+  Err_total:'Жұмыс құнын енгізіңіз',
+  ST_needBoth:'Шарт нөмірі мен телефонның 4 санын енгізіңіз',
+  Pwa_install:'Қолданбаны орнату',
+  Pwa_offline:'Интернет байланысы жоқ. Форманы толтырып, көруге болады, ал байланыс қайта пайда болғанда жіберу қайта қолжетімді болады.',
+  Pwa_queued:'Шарт осы құрылғыда сақталды және интернет пайда болысымен автоматты түрде жіберіледі.',
+  Pwa_queuedSent:'Байланыс қалпына келді — сақталған шарт жіберілуде…',
+  Pwa_iosHint:'Орнату үшін: Safari-де «Бөлісу», содан кейін «Негізгі экранға қосу» түймесін басыңыз.',
+},
+en:{
+  T:'Online Contract: Electrical Works & CCTV Installation',
+  D:'Fill in the form, review the contract text and sign it. The contract goes to the Contractor for confirmation — check its status under "Check status".',
+  Nav_form:'New contract',Nav_status:'Check status',
+  S1:'Client Details',S2:'Type of Work',S3:'Contract Terms',S4:'Work & Materials Specification',
+  L_type:'Client Type',L_num:'Contract No.',L_cust:'Full Name / Company',L_iin:'IIN / BIN',
+  L_phone:'Phone',L_email:'E-mail',L_addr:'Object Address',L_wt:'Type of work (multi-select)',
+  L_docNum:'ID document number',L_docBy:'Issued by',L_docDate:'Date of issue',
+  L_task:'Technical specification / description',L_mats:'Who purchases materials',L_warr:'Warranty (months)',
+  L_sd:'Start date',L_ed:'End date',L_tot:'Work cost, ₸',L_paid:'Advance, ₸',
+  L_bal:'Balance, ₸',L_pay:'Payment terms',
+  H_n:'Item',H_u:'Unit',H_q:'Qty',H_p:'Price ₸',H_s:'Total ₸',TotLbl:'Total:',
+  O_fl:'Individual',O_ip:'Sole Proprietor',O_too:'Legal Entity',
+  O_w1:'Electrical works',O_w2:'CCTV installation',O_w3:'Power supply / Panel',
+  O_w4:'Lighting, outlets, switches',O_w5:'Diagnostics / Repair',
+  O_mc:'Client',O_mi:'Contractor',O_mm:'Mixed',
+  O_p1:'100% prepayment',O_p2:'Advance + final payment',O_p3:'Stage payments',O_p4:'After completion',
+  B_add:'+ Add row',B_gen:'📄 Generate contract',B_prn:'🖨 Print',
+  SG_title:'Client Signature',
+  SG_note:'Draw your signature with a finger (mobile) or mouse (desktop) and press "Sign". You can then send the contract to the Contractor for confirmation.',
+  SG_ct:'Client Signature',
+  Sts_empty:'Not signed',Sts_ok:t=>`✅ Signed: ${t}`,B_sign:'Sign',B_clr:'✕ Clear',
+  AB_msg:'Signature locked in. The contract is being sent to the Contractor automatically…',
+  AB_pr:'🖨 Print',AB_retry:'Retry sending',
+  Sending:'Sending…',
+  Step1:'Generating contract',Step2:'Saving data',Step3:'Sending to Contractor',Step4:'Done',
+  DocNumLbl:'Your contract number',CopyDocBtn:'Copy number',CopyDocOk:'Copied ✓',
+  CheckStatusBtn:'Check status',
+  AutoReturnMsg:s=>`Returning to home in ${s}s`,AutoReturnBtn:'Return now',
+  SendOk:id=>`✅ Contract № ${id} sent to the Contractor. A Telegram/admin-panel notification was sent. Once confirmed, the signed PDF will be emailed to you. Check the status under "Check status" using this number and the last 4 digits of your phone.`,
+  SendErr:m=>`Failed to send: ${m}`,
+  Confirm:'Click OK to lock in the signature. Cannot be undone.',
+  NoSig:'Please draw your signature first',
+  SigIn:'Signature: _________________',
+  ST_t:'Check contract status',
+  ST_d:'Enter the contract number and the last 4 digits of the phone number given at signup.',
+  ST_L_num:'Contract number',ST_L_ph4:'Last 4 digits of phone',ST_btn:'Check',
+  ST_notfound:'No contract found with this number',
+  ST_mismatch:"Contract number or phone digits don't match",
+  ST_sentAt:'Sent:',ST_signedAt:'Signed by Contractor:',ST_dl:'Download signed contract',
+  ST_status:{'Черновик':'Draft','На подписи':'Awaiting Contractor signature','Подписан':'Signed','Отклонён':'Rejected by Contractor'},
+  Mat:{customer:'Client',contractor:'Contractor',mixed:'Mixed'},
+  ConsentLbl:'I have read the contract terms (incl. section 5 on simple electronic signature and section 6 on personal data) and consent to their processing and to electronic signing.',
+  NoConsent:'Please check the consent box for the contract terms and personal data processing',
+  Err_customer:'Enter the client full name / company name',
+  Err_iin:'IIN/BIN must contain 12 digits',
+  Err_email:'Enter a valid e-mail',
+  Err_phone:'Enter the client phone number',
+  Err_docNum:'Enter the ID document number',
+  Err_docBy:'Enter who issued the ID document',
+  Err_docDate:'Enter the ID document issue date',
+  Err_total:'Enter the cost of the works',
+  ST_needBoth:'Enter the contract number and 4 phone digits',
+  Pwa_install:'Install app',
+  Pwa_offline:'No internet connection. You can still fill in and view the form; sending will become available again once you\u2019re back online.',
+  Pwa_queued:'The contract has been saved on this device and will be sent automatically once you\u2019re back online.',
+  Pwa_queuedSent:'Connection restored — sending your saved contract…',
+  Pwa_iosHint:'To install: in Safari tap Share, then "Add to Home Screen".',
+},
+};
+
+/* ══════════════════════════════════════
+   BACKEND (Google Apps Script Web App) — Этап 3 ТЗ
+══════════════════════════════════════ */
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbynXXVVUey4Zrxh24QCKiXY6SLh9JrFVbE1XPYM7_gWFKca2VGH1AU1wakqITeZ7L_R/exec';
+
+let lang=window.SiteLanguage?SiteLanguage.get():'ru';
+function L(k){return(TR[lang]||TR.ru)[k]||(TR.ru[k]||k)}
+
+function setLang(l){
+  lang=l;
+  if(window.SiteLanguage)SiteLanguage.save(l);
+  document.querySelectorAll('.lb').forEach(b=>b.classList.toggle('on',b.textContent.trim()===({ru:'РУС',kz:'ҚАЗ',en:'ENG'}[l])));
+  applyAll();
+  if(window.SiteLanguage)SiteLanguage.apply();
+  if(G('contract') && G('contract').hasChildNodes() && G('sigSec').style.display!=='none')makeContract();
+}
+
+/* map element-id → translation key */
+const MAP=[
+  ['xT','T'],['xD','D'],['xS1','S1'],['xS2','S2'],['xS3','S3'],['xS4','S4'],
+  ['xNav_form','Nav_form'],['xNav_status','Nav_status'],
+  ['xL_type','L_type'],['xL_num','L_num'],['xL_cust','L_cust'],['xL_iin','L_iin'],
+  ['xL_phone','L_phone'],['xL_email','L_email'],['xL_addr','L_addr'],['xL_wt','L_wt'],
+  ['xL_docNum','L_docNum'],['xL_docBy','L_docBy'],['xL_docDate','L_docDate'],
+  ['xL_task','L_task'],['xL_mats','L_mats'],['xL_warr','L_warr'],
+  ['xL_sd','L_sd'],['xL_ed','L_ed'],['xL_tot','L_tot'],['xL_paid','L_paid'],
+  ['xL_bal','L_bal'],['xL_pay','L_pay'],
+  ['xH_n','H_n'],['xH_u','H_u'],['xH_q','H_q'],['xH_p','H_p'],['xH_s','H_s'],['xTotLbl','TotLbl'],
+  ['xO_fl','O_fl'],['xO_ip','O_ip'],['xO_too','O_too'],
+  ['xO_w1','O_w1'],['xO_w2','O_w2'],['xO_w3','O_w3'],['xO_w4','O_w4'],['xO_w5','O_w5'],
+  ['xO_mc','O_mc'],['xO_mi','O_mi'],['xO_mm','O_mm'],
+  ['xO_p1','O_p1'],['xO_p2','O_p2'],['xO_p3','O_p3'],['xO_p4','O_p4'],
+  ['xB_add','B_add'],['xB_gen','B_gen'],['xB_prn','B_prn'],
+  ['xSG_title','SG_title'],['xSG_note','SG_note'],['xSG_ct','SG_ct'],['xConsentLbl','ConsentLbl'],
+  ['cBtnLbl','B_sign'],
+  ['xAB_msg','AB_msg'],['xAB_pr','AB_pr'],['xAB_retry','AB_retry'],
+  ['xStep1','Step1'],['xStep2','Step2'],['xStep3','Step3'],['xStep4','Step4'],
+  ['xDocNumLbl','DocNumLbl'],['xCopyDocBtn','CopyDocBtn'],['xCheckStatusBtn','CheckStatusBtn'],
+  ['xAutoReturnBtn','AutoReturnBtn'],
+  ['xST_t','ST_t'],['xST_d','ST_d'],['xST_L_num','ST_L_num'],['xST_L_ph4','ST_L_ph4'],['xST_btn','ST_btn'],
+  ['xPwaInstall','Pwa_install'],['xPwaOffline','Pwa_offline'],['xPwaQueued','Pwa_queued'],
+];
+function applyAll(){
+  MAP.forEach(([id,k])=>{const el=document.getElementById(id);if(el){const v=L(k);if(typeof v==='string')el.textContent=v;}});
+  if(!cSigned) document.getElementById('cSts').textContent=L('Sts_empty');
+  document.querySelectorAll('[data-contract-message]').forEach(x => x.textContent = L(x.dataset.contractMessage));
+  // update clear buttons text (текст лежит во вложенном span.lbl, чтобы не затирать иконку)
+  document.querySelectorAll('.sbrow .bs .lbl').forEach(el=>{el.textContent=L('B_clr')});
+}
+
+/* ══════════════════════════════════════
+   FORM LOGIC
+══════════════════════════════════════ */
+const G=id=>document.getElementById(id);
+function calc(){
+  const t=+G('total').value||0,p=+G('paid').value||0;
+  G('balance').value=(Math.max(0,t-p)).toLocaleString('ru-RU');
+}
+G('total').addEventListener('input',calc);
+G('paid').addEventListener('input',calc);
+
+let rn=0;
+function addRow(){
+  rn++;
+  const r=document.createElement('tr');
+  r.innerHTML=`<td style="text-align:center;color:#999;font-size:12px">${rn}</td>
+<td><input class="iname" style="width:100%;box-sizing:border-box;padding:5px 7px;border:1px solid #ddd;border-radius:6px;font-size:13px"></td>
+<td><select class="un" style="padding:5px 4px;border:1px solid #ddd;border-radius:6px;font-size:12px;width:65px"><option>шт.</option><option>м</option><option>п.м</option><option>компл.</option><option>услуга</option><option>час</option><option>кв.м</option></select></td>
+<td><input class="qq" type="number" value="1" min="0" style="width:70px;padding:5px;border:1px solid #ddd;border-radius:6px;font-size:13px"></td>
+<td><input class="pp" type="number" value="0" min="0" style="width:88px;padding:5px;border:1px solid #ddd;border-radius:6px;font-size:13px"></td>
+<td class="r sm">0</td>
+<td style="text-align:center"><button class="bs" onclick="this.closest('tr').remove();recalcSpec()" style="padding:4px 8px;font-size:12px">✕</button></td>`;
+  G('tbody').appendChild(r);
+  const upd=()=>{r.querySelector('.sm').textContent=((+r.querySelector('.qq').value||0)*(+r.querySelector('.pp').value||0)).toLocaleString('ru-RU');recalcSpec()};
+  r.querySelectorAll('input').forEach(x=>x.addEventListener('input',upd));
+}
+function recalcSpec(){
+  let s=0;document.querySelectorAll('#tbody .sm').forEach(td=>{s+=parseFloat(td.textContent.replace(/[^\d.]/g,''))||0;});
+  G('specTot').textContent=s.toLocaleString('ru-RU');
+}
+addRow();
+
+function xe(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+
+/* ══════════════════════════════════════
+   CONTRACT
+══════════════════════════════════════ */
+function makeContract(){
+  const genCharge=G('genCharge');
+  genCharge.classList.remove('on'); void genCharge.offsetWidth; genCharge.classList.add('on');
+  calc();
+  const mat=L('Mat')[G('materials').value]||G('materials').value;
+  const works=[...G('workType').selectedOptions].map(x=>x.text).join(', ')||'По техническому заданию';
+  const rows=[...document.querySelectorAll('#tbody tr')].map((r,i)=>{
+    const nm=r.querySelector('.iname')?.value||'';
+    const un=r.querySelector('.un')?.value||'';
+    const qq=r.querySelector('.qq')?.value||'';
+    const pp=(+r.querySelector('.pp')?.value||0).toLocaleString('ru-RU');
+    const sm=r.querySelector('.sm')?.textContent||'0';
+    return`<tr><td>${i+1}</td><td>${xe(nm)}</td><td>${un}</td><td>${qq}</td><td>${pp} ₸</td><td><b>${sm} ₸</b></td></tr>`;
+  }).join('');
+  const spec=G('specTot').textContent;
+  const tot=(+G('total').value||0).toLocaleString('ru-RU');
+  const paid=(+G('paid').value||0).toLocaleString('ru-RU');
+  const bal=G('balance').value||'0';
+
+  G('contract').innerHTML=`
+<h2>ДОГОВОР ПОДРЯДА № ${xe(G('num').value)}</h2>
+<p style="text-align:center;margin-bottom:16px">на выполнение электромонтажных работ и/или монтаж систем видеонаблюдения</p>
+<p><b>г. Алматы</b>&nbsp;&nbsp; Дата: <b>${new Date().toLocaleDateString('ru-RU')}</b></p>
+<p><b>1. СТОРОНЫ</b></p>
+<p><b>Исполнитель:</b> ________________________________, действующий на основании ________________________.</p>
+<p><b>Заказчик:</b> <b>${xe(G('customer').value)||'—'}</b>, ${xe(G('type').value)}, ИИН/БИН: <b>${xe(G('iin').value)||'—'}</b>, удостоверение личности: № ${xe(G('docNum').value)||'—'}, кем выдано: ${xe(G('docBy').value)||'—'}, дата выдачи: ${xe(G('docDate').value)||'—'}, тел.: ${xe(G('phone').value)||'—'}, e-mail: ${xe(G('email').value)||'—'}.</p>
+<p><b>2. ПРЕДМЕТ ДОГОВОРА</b></p>
+<p>2.1. Исполнитель обязуется выполнить работы по адресу: <b>${xe(G('objectAddress').value)||'—'}</b>, а Заказчик — принять результат и произвести оплату.</p>
+<p>2.2. Виды работ: <b>${xe(works)}</b>.</p>
+<p>2.3. Техническое задание: ${xe(G('task').value)||'согласно устной договорённости сторон.'}</p>
+<p><b>3. МАТЕРИАЛЫ</b></p>
+<p>3.1. Материалы и оборудование приобретает: <b>${xe(mat)}</b>.</p>
+<p>3.2. При материалах Заказчика — он несёт ответственность за качество и пригодность. При материалах Исполнителя — их стоимость включена в смету согласно спецификации. Дополнительные материалы согласовываются отдельно.</p>
+<p><b>4. СПЕЦИФИКАЦИЯ</b></p>
+<table><thead><tr><th>№</th><th>Наименование</th><th>Ед.</th><th>Кол.</th><th>Цена</th><th>Сумма</th></tr></thead>
+<tbody>${rows}</tbody>
+<tfoot><tr style="font-weight:700;background:#f3f5f7"><td colspan="5" style="text-align:right">Итого по спецификации:</td><td>${spec} ₸</td></tr></tfoot></table>
+<p><b>5. СТОИМОСТЬ И ОПЛАТА</b></p>
+<p>5.1. Общая стоимость работ: <b>${tot} ₸</b>.</p>
+<p>5.2. Аванс: <b>${paid} ₸</b>. Остаток: <b>${bal} ₸</b>.</p>
+<p>5.3. Порядок оплаты: <b>${xe(G('payment').value)}</b>.</p>
+<p>5.4. Дополнительные работы выполняются только после письменного/электронного согласования объёма и стоимости.</p>
+<p><b>6. СРОКИ</b></p>
+<p>Начало: <b>${xe(G('start').value)||'по договорённости'}</b>. Окончание: <b>${xe(G('end').value)||'по договорённости'}</b>. Сроки изменяются по соглашению при изменении объёма, задержке материалов, отсутствии доступа или форс-мажоре.</p>
+<p><b>7. ОБЯЗАННОСТИ СТОРОН</b></p>
+<p>7.1. <b>Исполнитель</b>: выполнять работы качественно и в срок; соблюдать требования безопасности; немедленно уведомлять Заказчика о скрытых обстоятельствах, влияющих на объём или стоимость.</p>
+<p>7.2. <b>Заказчик</b>: обеспечить доступ к объекту; предоставить необходимые согласования; принять и оплатить работы в установленные сроки.</p>
+<p><b>8. ПРИЁМКА И ГАРАНТИЯ</b></p>
+<p>8.1. Приёмка — по акту выполненных работ. Замечания вносятся в акт с указанием срока устранения.</p>
+<p>8.2. Гарантийный срок: <b>${xe(G('warranty').value)} месяцев</b>. Гарантия не распространяется на повреждения от неправильной эксплуатации, вмешательства третьих лиц и материалов Заказчика.</p>
+<p>8.3. Права потребителя сохраняются согласно законодательству РК.</p>
+<p><b>9. ОТВЕТСТВЕННОСТЬ</b></p>
+<p>9.1. Стороны несут ответственность согласно законодательству РК. Исполнитель не отвечает за задержку по вине Заказчика или при форс-мажоре.</p>
+<p><b>10. ЭЛЕКТРОННОЕ ПОДПИСАНИЕ</b></p>
+<p>10.1. Договор заключается в электронной форме. Подпись на экране подтверждает волеизъявление стороны. Дата и время фиксируются автоматически. Стороны вправе продублировать подписание на бумаге.</p>
+<p><b>11. ПЕРСОНАЛЬНЫЕ ДАННЫЕ</b></p>
+<p>Заказчик даёт согласие на обработку персональных данных в объёме, необходимом для исполнения договора, в соответствии с Законом РК «О персональных данных и их защите».</p>
+<p><b>12. РЕКВИЗИТЫ И ПОДПИСИ</b></p>
+<table><tr>
+<td style="width:50%;vertical-align:top;padding:12px">
+<b>ИСПОЛНИТЕЛЬ</b><br><br>
+<i style="color:#777">Реквизиты и подпись Исполнителя будут добавлены сервером автоматически после подтверждения договора (Telegram / панель Исполнителя).</i>
+</td>
+<td style="vertical-align:top;padding:12px">
+<b>ЗАКАЗЧИК</b><br><br>
+ФИО: ${xe(G('customer').value)||'—'}<br>
+ИИН/БИН: ${xe(G('iin').value)||'—'}<br>
+Удостоверение личности: № ${xe(G('docNum').value)||'—'}, выдан: ${xe(G('docBy').value)||'—'}, дата выдачи: ${xe(G('docDate').value)||'—'}<br>
+Адрес: ${xe(G('objectAddress').value)||'—'}<br>
+Тел.: ${xe(G('phone').value)||'—'}<br><br>
+<span id="cSigPlc">Подпись: _________________________</span>
+</td>
+</tr></table>
+<p style="font-size:11px;color:#999;margin-top:14px">Шаблон для ознакомления. Итоговый текст с реквизитами Исполнителя формируется сервером при отправке.</p>`;
+
+  if(lang!=='ru') localizeContractPreview(lang);
+
+  /* reset signature */
+  cSigned=false; cTS='';
+  G('cBtn').disabled=false;
+  G('cCanvas').className='pad';
+  G('cSts').textContent=L('Sts_empty');
+  G('cSts').className='sts';
+  const signOv=G('signOverlay'); if(signOv) signOv.classList.remove('on');
+  G('actBar').style.display='none';
+  G('sendErr').style.display='none';
+  G('retryBtn').style.display='none';
+  G('stampTxt').style.display='none';
+  G('sendRow').style.display='flex';
+  sendInProgress=false;
+  stepperHide();
+  G('docNumBox').classList.remove('on');
+  G('docNumBig').textContent='';
+  if(typeof autoReturnTimer!=='undefined' && autoReturnTimer){ clearTimeout(autoReturnTimer); autoReturnTimer=null; }
+  const arBox=G('autoReturnBox'); if(arBox) arBox.classList.remove('on');
+  lastDocId='';
+  G('shareBox').style.display='none';G('shareBox').replaceChildren();
+  wipePad();
+  G('sigSec').style.display='block';
+  setTimeout(()=>G('sigSec').scrollIntoView({behavior:'smooth'}),150);
+
+  setTimeout(()=>{
+    genCharge.classList.remove('on');
+    const c=G('contract');
+    c.classList.remove('spark-flash'); void c.offsetWidth; c.classList.add('spark-flash');
+    setTimeout(()=>c.classList.remove('spark-flash'),1400);
+  },780);
+}
+
+/* ══════════════════════════════════════
+   SIGNATURE PAD — FIXED IMPLEMENTATION
+══════════════════════════════════════ */
+let cSigned=false,cTS='',cSigDataUrl='',cSigW=0,cSigH=0;
+let lastDocId=''; /* Задача 7: последний номер договора для копирования/перехода к статусу */
+
+function initPad(id){
+  const cv=G(id);
+  if(!cv) return;
+  const ph=cv.parentElement?.querySelector('.padph');
+
+  /* Set canvas BUFFER size from its CSS rendered size.
+     Height now comes from the actual rendered CSS height (220px desktop /
+     200px mobile per site-mobile.css, Задача 4) instead of a hardcoded value. */
+  function setupSize(){
+    const w=cv.offsetWidth||cv.parentElement?.offsetWidth||340;
+    const h=cv.offsetHeight||220;
+    cv.width=w;    /* buffer pixels = CSS pixels (no DPR scaling to avoid offset bugs) */
+    cv.height=h;
+  }
+  setupSize();
+  /* re-setup on resize but keep canvas clear */
+  window.addEventListener('resize',()=>{ setupSize(); });
+
+  let drawing=false, lx=0, ly=0;
+
+  function getXY(e){
+    const rect=cv.getBoundingClientRect();
+    /* Scale from CSS pixels → canvas pixels */
+    const scaleX=cv.width/rect.width;
+    const scaleY=cv.height/rect.height;
+    const src=e.touches?e.touches[0]:e;
+    return[(src.clientX-rect.left)*scaleX,(src.clientY-rect.top)*scaleY];
+  }
+
+  function startDraw(e){
+    e.preventDefault();
+    drawing=true;
+    if(ph) ph.style.display='none';
+    [lx,ly]=getXY(e);
+  }
+  function moveDraw(e){
+    if(!drawing) return;
+    e.preventDefault();
+    const[x,y]=getXY(e);
+    const ctx=cv.getContext('2d');
+    ctx.beginPath();
+    ctx.moveTo(lx,ly);
+    ctx.lineTo(x,y);
+    ctx.strokeStyle='#111';   /* solid black — clearly visible */
+    ctx.lineWidth=2.5;
+    ctx.lineCap='round';
+    ctx.lineJoin='round';
+    ctx.stroke();
+    [lx,ly]=[x,y];
+  }
+  function stopDraw(){ drawing=false; }
+
+  cv.addEventListener('mousedown', startDraw);
+  cv.addEventListener('mousemove', moveDraw);
+  cv.addEventListener('mouseup',   stopDraw);
+  cv.addEventListener('mouseleave',stopDraw);
+  cv.addEventListener('touchstart', startDraw, {passive:false});
+  cv.addEventListener('touchmove',  moveDraw,  {passive:false});
+  cv.addEventListener('touchend',   stopDraw);
+}
+
+function padEmpty(id){
+  const cv=G(id);
+  try{
+    const d=cv.getContext('2d').getImageData(0,0,cv.width,cv.height).data;
+    return !Array.from(d).some(v=>v>0);
+  }catch(e){return true}
+}
+function wipePad(){
+  const cv=G('cCanvas');
+  cv.getContext('2d').clearRect(0,0,cv.width,cv.height);
+  const ph=cv.parentElement?.querySelector('.padph');
+  if(ph) ph.style.display='';
+}
+
+/* Обрезает холст по фактическим границам нарисованной подписи (а не по
+   всему, в основном пустому, холсту) — иначе подпись в PDF выходит
+   крошечной/смещённой (см. README архива, известная проблема). */
+function cropSignature(canvas){
+  const ctx=canvas.getContext('2d');
+  const w=canvas.width,h=canvas.height;
+  const data=ctx.getImageData(0,0,w,h).data;
+  let minX=w,minY=h,maxX=-1,maxY=-1;
+  for(let y=0;y<h;y++){
+    for(let x=0;x<w;x++){
+      if(data[(y*w+x)*4+3]>10){
+        if(x<minX)minX=x; if(x>maxX)maxX=x;
+        if(y<minY)minY=y; if(y>maxY)maxY=y;
+      }
+    }
+  }
+  if(maxX<0) return null;
+  const pad=4;
+  minX=Math.max(0,minX-pad); minY=Math.max(0,minY-pad);
+  maxX=Math.min(w-1,maxX+pad); maxY=Math.min(h-1,maxY+pad);
+  const cw=maxX-minX+1, ch=maxY-minY+1;
+  const out=document.createElement('canvas');
+  out.width=cw; out.height=ch;
+  out.getContext('2d').drawImage(canvas,minX,minY,cw,ch,0,0,cw,ch);
+  return {dataUrl:out.toDataURL('image/png'),w:cw,h:ch};
+}
+
+function doSign(){
+  if(padEmpty('cCanvas')){alert(L('NoSig'));return;}
+  if(!G('consentChk').checked){alert(L('NoConsent'));return;}
+  if(!confirm(L('Confirm'))) return;
+
+  const btnEl=G('cBtn'), overlay=G('signOverlay');
+  btnEl.disabled=true;
+  if(overlay) overlay.classList.add('on');
+
+  const cropped=cropSignature(G('cCanvas'));
+  if(!cropped){
+    alert(L('NoSig'));
+    btnEl.disabled=false;
+    if(overlay) overlay.classList.remove('on');
+    return;
+  }
+  cSigDataUrl=cropped.dataUrl; cSigW=cropped.w; cSigH=cropped.h;
+
+  const ts=new Date().toLocaleString('ru-RU');
+  G('cCanvas').className='pad ok';
+  const cph=G('cCanvas').parentElement?.querySelector('.padph'); if(cph) cph.style.display='none';
+
+  const stsEl=G('cSts'), plc=G('cSigPlc');
+  stsEl.textContent=L('Sts_ok')(ts); stsEl.className='sts ok';
+  if(plc) plc.innerHTML=`<img src="${cSigDataUrl}" style="height:55px;border:1px solid #ddd;border-radius:4px;margin-top:4px;display:block"><small style="color:#555;font-size:11px">${ts}</small>`;
+
+  /* "зарядка" при фиксации подписи + короткая вспышка по завершении.
+     Оверлей со спиннером (Задача 5) держится ровно на время этой анимации,
+     чтобы визуально совпадать с моментом, когда подпись реально "зафиксирована". */
+  const chargeEl=G('cCharge'), box=btnEl.closest('.sigbox');
+  chargeEl.classList.remove('on'); void chargeEl.offsetWidth; chargeEl.classList.add('on');
+  setTimeout(()=>{
+    chargeEl.classList.remove('on');
+    if(overlay) overlay.classList.remove('on');
+    box.classList.add('spark-flash');
+    setTimeout(()=>box.classList.remove('spark-flash'),1400);
+    /* автоматическая отправка Исполнителю сразу после фиксации подписи —
+       отдельной кнопки «Отправить Исполнителю» больше нет */
+    submitToServer();
+  },820);
+
+  cSigned=true; cTS=ts;
+  afterSign();
+}
+
+function clearPad(){
+  wipePad();
+  cSigned=false; cTS=''; cSigDataUrl=''; cSigW=0; cSigH=0;
+  G('cSts').textContent=L('Sts_empty'); G('cSts').className='sts';
+  G('cBtn').disabled=false;
+  G('cCanvas').className='pad';
+  const plc=G('cSigPlc'); if(plc) plc.textContent=L('SigIn');
+  const overlay=G('signOverlay'); if(overlay) overlay.classList.remove('on');
+  afterSign();
+}
+
+/* Показывает/скрывает блок «Отправить Исполнителю» после подписи
+   Заказчика — Исполнитель подтверждает договор удалённо (Telegram/
+   /admin), поэтому второй подписи на этом экране не требуется. */
+function afterSign(){
+  const bar=G('actBar');
+  if(cSigned){
+    bar.style.display='block';
+    bar.classList.remove('spark-flash'); void bar.offsetWidth; bar.classList.add('spark-flash');
+    setTimeout(()=>bar.classList.remove('spark-flash'),1400);
+    bar.scrollIntoView({behavior:'smooth'});
+  } else {
+    bar.style.display='none';
+  }
+}
+
+/* ══════════════════════════════════════
+   ЭКРАНЫ (форма / кабинет клиента — ТЗ раздел 4)
+══════════════════════════════════════ */
+function showScreen(name){
+  const isForm=name==='form';
+  G('screenForm').style.display=isForm?'':'none';
+  G('screenStatus').style.display=isForm?'none':'';
+  G('navForm').classList.toggle('on',isForm);
+  G('navStatus').classList.toggle('on',!isForm);
+}
+
+/* ══════════════════════════════════════
+   ФИКСАЦИЯ IP / ГЕОЛОКАЦИИ (ТЗ раздел 5.3 договора)
+   IP — практическое приближение через ipify (см. README архива,
+   раздел «Важные технические ограничения»), не серверный заголовок.
+   Геолокация — только если пользователь разрешит; иначе просто
+   отправляем пустое значение, отправка не блокируется.
+══════════════════════════════════════ */
+function getClientIp(){
+  return fetch('https://api.ipify.org?format=json').then(r=>r.json()).then(d=>d.ip||'').catch(()=>'');
+}
+function getGeo(){
+  return new Promise(resolve=>{
+    if(!navigator.geolocation){resolve('');return;}
+    const t=setTimeout(()=>resolve(''),4000);
+    navigator.geolocation.getCurrentPosition(
+      pos=>{clearTimeout(t);resolve(`${pos.coords.latitude.toFixed(5)}, ${pos.coords.longitude.toFixed(5)} (±${Math.round(pos.coords.accuracy)} м)`);},
+      ()=>{clearTimeout(t);resolve('');},
+      {timeout:3800,maximumAge:60000}
+    );
+  });
+}
+
+function validateBeforeSend(){
+  if(!G('customer').value.trim()) return L('Err_customer');
+  if(!/^\d{12}$/.test(G('iin').value.trim())) return L('Err_iin');
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(G('email').value.trim())) return L('Err_email');
+  if(!G('phone').value.trim()) return L('Err_phone');
+  if(!G('docNum').value.trim()) return L('Err_docNum');
+  if(!G('docBy').value.trim()) return L('Err_docBy');
+  if(!G('docDate').value) return L('Err_docDate');
+  if((+G('total').value||0)<=0) return L('Err_total');
+  if(!cSigned||!cSigDataUrl) return L('NoSig');
+  if(!G('consentChk').checked) return L('NoConsent');
+  return '';
+}
+
+function collectSpecRows(){
+  return[...document.querySelectorAll('#tbody tr')].map(r=>({
+    name:r.querySelector('.iname')?.value||'',
+    unit:r.querySelector('.un')?.value||'',
+    qty:+r.querySelector('.qq')?.value||0,
+    price:+r.querySelector('.pp')?.value||0,
+    sum:(+r.querySelector('.qq')?.value||0)*(+r.querySelector('.pp')?.value||0)
+  })).filter(r=>r.name);
+}
+
+/* ══════════════════════════════════════
+   СТАТУС-БАР ПРОГРЕССА ОТПРАВКИ (Задача 6)
+   Шаги: 1 Формируем договор → 2 Записываем данные →
+         3 Отправляем исполнителю → 4 Готово
+══════════════════════════════════════ */
+function stepperShow(){
+  const s=G('sendStepper');
+  if(!s) return;
+  s.classList.add('on');
+}
+function stepperHide(){
+  const s=G('sendStepper');
+  if(!s) return;
+  s.classList.remove('on');
+  s.querySelectorAll('.step').forEach(x=>x.classList.remove('active','done'));
+}
+function stepperSet(n){
+  const s=G('sendStepper');
+  if(!s) return;
+  s.querySelectorAll('.step').forEach(el=>{
+    const idx=+el.dataset.step;
+    el.classList.remove('active','done');
+    if(idx<n) el.classList.add('done');
+    else if(idx===n) el.classList.add('active');
+  });
+}
+function stepperFinish(){
+  const s=G('sendStepper');
+  if(!s) return;
+  stepperSet(4);
+  setTimeout(()=>{s.querySelectorAll('.step').forEach(x=>{x.classList.remove('active');x.classList.add('done')})},450);
+}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
+let sendInProgress=false; /* защита от повторного/параллельного автоотправления */
+
+/* ══════════════════════════════════════
+   ОТПРАВКА ИСПОЛНИТЕЛЮ (POST → Apps Script Web App, ТЗ раздел 3)
+   Запускается автоматически сразу после подписи Заказчика (doSign()).
+   Кнопка «Отправить Исполнителю» — вручную не нужна; повторная попытка
+   доступна через retryBtn, который появляется только при ошибке.
+══════════════════════════════════════ */
+async function submitToServer(){
+  if(sendInProgress) return;
+  const errBox=G('sendErr'), retryBtn=G('retryBtn');
+  const err=validateBeforeSend();
+  if(err){errBox.textContent=err;errBox.style.display='block';retryBtn.style.display='none';return;}
+  errBox.style.display='none';
+  retryBtn.style.display='none';
+
+  if(WEB_APP_URL.indexOf('ВСТАВЬТЕ_')===0){
+    errBox.textContent=L('SendErr')('WEB_APP_URL не настроен — см. комментарий в коде страницы');
+    errBox.style.display='block';
+    return;
+  }
+
+  sendInProgress=true;
+  const charge=G('sendCharge');
+  charge.classList.remove('on'); void charge.offsetWidth; charge.classList.add('on');
+
+  /* Задача 6: шаг 1 — формируем договор */
+  stepperShow(); stepperSet(1);
+  await sleep(350);
+
+  /* шаг 2 — записываем данные (IP/гео, сбор payload) */
+  stepperSet(2);
+  const [ip,geo]=await Promise.all([getClientIp(),getGeo()]);
+  await sleep(200);
+
+  const payload={
+    type:G('type').value,
+    lang:lang,
+    customer:G('customer').value.trim(),
+    iin:G('iin').value.trim(),
+    phone:G('phone').value.trim(),
+    email:G('email').value.trim(),
+    docNum:G('docNum').value.trim(),
+    docBy:G('docBy').value.trim(),
+    docDate:G('docDate').value,
+    objectAddress:G('objectAddress').value.trim(),
+    workType:[...G('workType').selectedOptions].map(o=>o.text),
+    task:G('task').value.trim(),
+    materials:G('materials').value,
+    warranty:G('warranty').value,
+    start:G('start').value,
+    end:G('end').value,
+    total:+G('total').value||0,
+    paid:+G('paid').value||0,
+    payment:G('payment').value,
+    specRows:collectSpecRows(),
+    clientSignaturePngBase64:cSigDataUrl.replace(/^data:image\/png;base64,/,''),
+    clientSignatureWidth:cSigW,
+    clientSignatureHeight:cSigH,
+    consentGiven:true,
+    ipClient:ip,
+    geo:geo,
+    userAgent:navigator.userAgent
+  };
+
+  /* шаг 3 — отправляем исполнителю */
+  stepperSet(3);
+
+  try{
+    /* Content-Type: text/plain — чтобы браузер не отправлял CORS-preflight
+       (OPTIONS), который Apps Script Web App по умолчанию не обрабатывает.
+       Сервер (doPost в Code.gs) всё равно парсит тело как JSON. */
+    const res=await fetch(WEB_APP_URL,{
+      method:'POST',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body:JSON.stringify(payload)
+    });
+    const data=await res.json();
+    charge.classList.remove('on');
+    sendInProgress=false;
+
+    if(data.ok){
+      /* шаг 4 — готово */
+      stepperFinish();
+      pwaApplySubmitSuccess(data);
+    }else{
+      stepperHide();
+      errBox.textContent=L('SendErr')(data.error||'—');
+      errBox.style.display='block';
+      retryBtn.style.display='inline-flex';
+    }
+  }catch(e){
+    charge.classList.remove('on');
+    sendInProgress=false;
+    /* Сетевая ошибка (нет соединения) — не ошибка сервера: кладём заявку
+       в офлайн-очередь вместо показа ошибки (ТЗ п.5.3, Этап 4). Ошибка,
+       которую вернул сам сервер (data.ok===false выше), сюда не попадает —
+       это разные случаи, см. pwaIsNetworkError(). */
+    if(pwaIsNetworkError(e)){
+      stepperHide();
+      pwaQueueContract(payload);
+      return;
+    }
+    stepperHide();
+    errBox.textContent=L('SendErr')(String(e));
+    errBox.style.display='block';
+    retryBtn.style.display='inline-flex';
+  }
+}
+
+/* Общий путь успешной отправки — используется и обычной отправкой, и
+   автоповтором из офлайн-очереди (pwaTryFlushQueue), чтобы UI-результат
+   был одинаковым в обоих случаях. */
+function pwaApplySubmitSuccess(data){
+  if(data.docId) G('num').value=data.docId;
+  lastDocId=data.docId||G('num').value||'';
+  renderClientShare(data);
+  const st=G('stampTxt');
+  st.style.display='block';
+  st.textContent=L('SendOk')(data.docId||G('num').value);
+  /* Задача 7: крупный блок с номером договора */
+  const dnb=G('docNumBox');
+  G('docNumBig').textContent=lastDocId;
+  dnb.classList.add('on');
+  const box=G('actBar');
+  box.classList.remove('spark-flash'); void box.offsetWidth; box.classList.add('spark-flash');
+  setTimeout(()=>box.classList.remove('spark-flash'),1400);
+  box.scrollIntoView({behavior:'smooth'});
+  /* Задача 9: автовозврат на home.html через 30 сек */
+  startAutoReturn(30);
+  /* Задача 10: сохраняем договор в локальную историю «Мои договора» (home.html) */
+  saveMyContractEntry({
+    docId: lastDocId,
+    status: 'На подписи',
+    date: new Date().toISOString(),
+    lang: lang,
+    phone4: (G('phone').value||'').replace(/\D/g,'').slice(-4)
+  });
+}
+
+/* Задача 10: запись истории договоров клиента в localStorage,
+   читается разделом «Мои договора» на home.html. */
+function saveMyContractEntry(entry){
+  const KEY='dogovor.my_contracts';
+  let list=[];
+  try{ list=JSON.parse(localStorage.getItem(KEY)||'[]'); if(!Array.isArray(list))list=[]; }catch(e){ list=[]; }
+  list=list.filter(x=>x && x.docId!==entry.docId);
+  list.unshift(entry);
+  if(list.length>50) list.length=50;
+  try{ localStorage.setItem(KEY,JSON.stringify(list)); }catch(e){}
+}
+
+/* Задача 9: автовозврат на главную страницу с обратным отсчётом */
+let autoReturnTimer=null;
+function autoReturnHomeUrl(){
+  try{
+    if(location.pathname.indexOf('contract.html')!==-1) return location.pathname.replace('contract.html','home.html')+location.search.replace(/[?&]?noestimate/,'')+location.hash;
+  }catch(e){}
+  return './home.html';
+}
+function autoReturnTick(sec){
+  const txt=G('xAutoReturnTxt');
+  if(!txt) return;
+  if(sec<=0){ window.location.href=autoReturnHomeUrl(); return; }
+  txt.textContent=L('AutoReturnMsg')(sec);
+  autoReturnTimer=setTimeout(()=>autoReturnTick(sec-1),1000);
+}
+function startAutoReturn(seconds){
+  const box=G('autoReturnBox');
+  if(!box) return;
+  if(autoReturnTimer){ clearTimeout(autoReturnTimer); autoReturnTimer=null; }
+  box.classList.add('on');
+  autoReturnTick(seconds);
+}
+function autoReturnNow(){
+  if(autoReturnTimer){ clearTimeout(autoReturnTimer); autoReturnTimer=null; }
+  window.location.href=autoReturnHomeUrl();
+}
+
+/* Задача 7: копирование номера договора в буфер обмена */
+function copyDocId(){
+  if(!lastDocId) return;
+  const btn=G('copyDocBtn'), lbl=btn.querySelector('span');
+  const restore=L('CopyDocBtn');
+  const showOk=()=>{lbl.textContent=L('CopyDocOk');setTimeout(()=>{lbl.textContent=L('CopyDocBtn')},1800)};
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(lastDocId).then(showOk).catch(()=>window.prompt('Copy:',lastDocId));
+  }else{
+    window.prompt('Copy:',lastDocId);
+  }
+}
+
+/* Задача 7: переход на экран статуса с автоподстановкой номера договора */
+function goCheckStatus(){
+  if(!lastDocId) return;
+  showScreen('status');
+  G('stDocId').value=lastDocId;
+  G('stPhone4').focus();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+
+/* A click opens a prepared message; browsers cannot silently send SMS/WhatsApp. */
+function renderClientShare(data){
+  const box=G(data.status?'statusShare':'shareBox'),url=data.draftUrl||data.signedPdfUrl||'',phone=String(data.ownerWhatsapp||'').replace(/\D/g,'');
+  if(!url||!/^https:\/\//.test(url)){box.style.display='none';return;}
+  const templates={
+   kz:`Сәлеметсіз бе! № ${data.docId} шарты бойынша хабарласып отырмын.\nШарт сілтемесі: ${url}`,
+   ru:`Здравствуйте! Пишу по договору № ${data.docId}.\nСсылка на договор: ${url}`,
+   en:`Hello! I am contacting you about contract ${data.docId}.\nContract link: ${url}`
+  };
+  const contractLang=['kz','ru','en'].includes(data.lang||data.language)?(data.lang||data.language):lang;
+  const msg=templates[contractLang]||templates.ru;
+  box.replaceChildren();box.style.display='flex';
+  const file=document.createElement('a');file.className='btn bp';file.textContent=({kz:'Шартты ашу',ru:'Открыть договор',en:'Open contract'})[contractLang];file.href=url;file.target='_blank';file.rel='noopener';box.append(file);
+  if(phone){
+   const wa=document.createElement('a');wa.className='btn bw';wa.textContent='WhatsApp →';wa.href=`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;wa.target='_blank';wa.rel='noopener';box.append(wa);
+   const sms=document.createElement('a');sms.className='btn bs';sms.textContent='SMS →';sms.href=`sms:+${phone}?body=${encodeURIComponent(msg)}`;box.append(sms);
+  }
+  const copy=document.createElement('button');copy.className='bs';copy.textContent=({kz:'Хабарламаны көшіру',ru:'Скопировать сообщение',en:'Copy message'})[contractLang];copy.onclick=()=>navigator.clipboard.writeText(msg).then(()=>{copy.textContent='✓';}).catch(()=>{window.prompt('Copy:',msg)});box.append(copy);
+}
+
+/* ══════════════════════════════════════
+   КАБИНЕТ КЛИЕНТА: проверка статуса (GET, ТЗ раздел 4)
+══════════════════════════════════════ */
+/* Задача 8: кнопка WhatsApp «Написать Исполнителю» — показывается на
+   экране статуса, пока договор не подписан. Текст сообщения — на языке
+   клиента (по договору, а не по текущему языку интерфейса). */
+const WA_ASK_MSG={
+  ru:(id,st)=>`Здравствуйте! Мой договор №${id}, статус: ${st}. Прошу уточнить.`,
+  kz:(id,st)=>`Сәлеметсіз бе! Менің шартым №${id}, мәртебесі: ${st}. Нақтылауды сұраймын.`,
+  en:(id,st)=>`Hello! My contract №${id}, status: ${st}. Please advise.`
+};
+const WA_ASK_LABEL={
+  ru:'Написать Исполнителю в WhatsApp',
+  kz:'Орындаушыға WhatsApp арқылы жазу',
+  en:'Message the Contractor on WhatsApp'
+};
+async function checkStatus(){
+  const id=(G('stDocId').value||'').trim();
+  const ph4=(G('stPhone4').value||'').trim();
+  const box=G('stResult');
+  const charge=G('stCharge');
+  box.innerHTML='';G('statusShare').replaceChildren();
+
+  if(!id||!/^\d{4}$/.test(ph4)){
+    box.innerHTML=`<div class="note n-b">${xe(L('ST_needBoth'))}</div>`;
+    return;
+  }
+  if(WEB_APP_URL.indexOf('ВСТАВЬТЕ_')===0){
+    box.innerHTML=`<div class="note n-b">${xe(L('SendErr')('WEB_APP_URL не настроен'))}</div>`;
+    return;
+  }
+
+  charge.classList.remove('on'); void charge.offsetWidth; charge.classList.add('on');
+  try{
+    const url=`${WEB_APP_URL}?action=status&docId=${encodeURIComponent(id)}&phone4=${encodeURIComponent(ph4)}`;
+    const res=await fetch(url);
+    const data=await res.json();
+    charge.classList.remove('on');
+
+    if(!data.ok){
+      const msg=data.error==='phone_mismatch'?L('ST_mismatch'):L('ST_notfound');
+      box.innerHTML=`<div class="note n-b">${xe(msg)}</div>`;
+      return;
+    }
+
+    // A status request can come from a fresh device: use the language stored with this contract.
+    if(data.language && ['kz','ru','en'].includes(data.language) && data.language!==lang)setLang(data.language);
+    const statusMap=L('ST_status')||{};
+    const statusLabel=statusMap[data.status]||data.status;
+    let html=`<div class="note n-g"><b>${xe(data.docId)}</b> — <b>${xe(statusLabel)}</b><br>`;
+    if(data.sentAt) html+=`${xe(L('ST_sentAt'))} ${xe(data.sentAt)}<br>`;
+    if(data.signedAt) html+=`${xe(L('ST_signedAt'))} ${xe(data.signedAt)}<br>`;
+    html+='</div>';
+    if(data.draftPdfUrl && data.status!=='Подписан'){
+      html+=`<div class="brow"><a class="bp" href="${xe(data.draftPdfUrl)}" target="_blank" rel="noopener">${xe(({kz:'Шарт жобасын ашу',ru:'Открыть черновик',en:'Open draft'})[lang])}</a></div>`;
+    }
+    if(data.status==='Подписан'&&data.signedPdfUrl){
+      html+=`<div class="brow"><a class="bp" style="text-decoration:none" href="${xe(data.signedPdfUrl)}" target="_blank" rel="noopener">`+
+            `<svg class="ic" viewBox="0 0 24 24"><use href="#i-download"/></svg>${xe(L('ST_dl'))}</a></div>`;
+    }
+    /* Задача 8: кнопка WhatsApp — пока Исполнитель не подписал договор */
+    if(data.status!=='Подписан'){
+      const waPhone=String(data.ownerWhatsapp||'').replace(/\D/g,'');
+      if(waPhone){
+        const waLang=['kz','ru','en'].includes(data.language)?data.language:lang;
+        const waMsg=(WA_ASK_MSG[waLang]||WA_ASK_MSG.ru)(data.docId,statusLabel);
+        const waLbl=WA_ASK_LABEL[waLang]||WA_ASK_LABEL.ru;
+        html+=`<div class="brow"><a class="bw" href="https://wa.me/${waPhone}?text=${encodeURIComponent(waMsg)}" target="_blank" rel="noopener">`+
+              `<svg class="ic" viewBox="0 0 24 24"><use href="#i-chat"/></svg>${xe(waLbl)}</a></div>`;
+      }
+    }
+    box.innerHTML=html;
+    if(data.draftPdfUrl || data.signedPdfUrl) renderClientShare({...data,draftUrl:data.status==='Подписан'?'':data.draftPdfUrl});
+  }catch(e){
+    charge.classList.remove('on');
+    box.innerHTML=`<div class="note n-b">${xe(L('SendErr')(String(e)))}</div>`;
+  }
+}
+
+/* ══════════════════════════════════════
+   PWA (Этап 4, ТЗ раздел 5)
+   1. Регистрация service-worker.js.
+   2. beforeinstallprompt → показ/скрытие кнопки, .prompt() по клику;
+      на iOS (beforeinstallprompt не поддерживается) — текстовая подсказка.
+   3. Офлайн-баннер по navigator.onLine / событиям online/offline.
+   4. Офлайн-очередь отправки договора (см. submitToServer выше):
+      сетевая ошибка → payload в localStorage → показать #pwaQueuedBanner →
+      на 'online' — pwaTryFlushQueue() пробует отправить ещё раз.
+   Существующая функциональность формы (заполнение/подпись/обычная
+   отправка/кабинет клиента) не затронута — только добавлена офлайн-
+   обвязка вокруг неё.
+══════════════════════════════════════ */
+
+/* --- 1. Service Worker --- */
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('service-worker.js').catch(()=>{});
+  });
+}
+
+/* --- 2. Установка приложения --- */
+let pwaDeferredPrompt=null;
+function pwaIsStandalone(){
+  return window.matchMedia('(display-mode: standalone)').matches || navigator.standalone===true;
+}
+function pwaIsIOS(){
+  return /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
+}
+function pwaShowToast(text){
+  const t=document.createElement('div');
+  t.textContent=text;
+  t.style.cssText='position:fixed;left:50%;bottom:24px;transform:translateX(-50%);max-width:88vw;'
+    +'background:var(--surface2,#242a33);color:var(--text);border:1px solid var(--border2,#3a4150);'
+    +'border-radius:10px;padding:10px 16px;font-size:13px;box-shadow:0 8px 24px rgba(0,0,0,.4);z-index:2000';
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(),5000);
+}
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault();
+  pwaDeferredPrompt=e;
+  if(!pwaIsStandalone()) G('pwaInstallBtn').classList.add('show');
+});
+window.addEventListener('appinstalled',()=>{
+  pwaDeferredPrompt=null;
+  G('pwaInstallBtn').classList.remove('show');
+});
+async function pwaInstallClick(){
+  if(pwaDeferredPrompt){
+    pwaDeferredPrompt.prompt();
+    try{ await pwaDeferredPrompt.userChoice; }catch(e){}
+    pwaDeferredPrompt=null;
+    G('pwaInstallBtn').classList.remove('show');
+    return;
+  }
+  if(pwaIsIOS()) pwaShowToast(L('Pwa_iosHint'));
+}
+/* Safari/iOS никогда не шлёт beforeinstallprompt — показываем кнопку
+   сразу (если приложение уже не установлено), клик даст текстовую
+   подсказку вместо системного диалога. */
+requestAnimationFrame(()=>{
+  if(pwaIsIOS() && !pwaIsStandalone()) G('pwaInstallBtn').classList.add('show');
+});
+
+/* --- 3. Офлайн-баннер --- */
+function pwaUpdateOfflineBanner(){
+  G('pwaOfflineBanner').classList.toggle('show',!navigator.onLine);
+}
+window.addEventListener('offline',pwaUpdateOfflineBanner);
+window.addEventListener('online',()=>{ pwaUpdateOfflineBanner(); pwaTryFlushQueue(); });
+pwaUpdateOfflineBanner();
+
+/* --- 4. Офлайн-очередь отправки договора --- */
+const PWA_QUEUE_KEY='pwaPendingContract';
+
+function pwaIsNetworkError(e){
+  /* Реальная потеря сети — TypeError от fetch() ("Failed to fetch" и т.п.)
+     либо браузер сам сообщает navigator.onLine===false. Ошибка ответа
+     сервера (SyntaxError при парсинге не-JSON, data.ok===false) сюда не
+     попадает — это уже "сервер ответил, но отклонил", а не офлайн. */
+  return !navigator.onLine || (typeof TypeError!=='undefined' && e instanceof TypeError);
+}
+
+function pwaQueueContract(payload){
+  try{ localStorage.setItem(PWA_QUEUE_KEY,JSON.stringify(payload)); }catch(e){}
+  G('xPwaQueued').textContent=L('Pwa_queued');
+  G('pwaQueuedBanner').classList.add('show');
+}
+
+async function pwaTryFlushQueue(){
+  let raw;
+  try{ raw=localStorage.getItem(PWA_QUEUE_KEY); }catch(e){ return; }
+  if(!raw) return;
+  if(WEB_APP_URL.indexOf('ВСТАВЬТЕ_')===0) return;
+
+  let payload;
+  try{ payload=JSON.parse(raw); }
+  catch(e){ try{localStorage.removeItem(PWA_QUEUE_KEY);}catch(_){} G('pwaQueuedBanner').classList.remove('show'); return; }
+
+  G('xPwaQueued').textContent=L('Pwa_queuedSent');
+  stepperShow(); stepperSet(3);
+
+  try{
+    const res=await fetch(WEB_APP_URL,{
+      method:'POST',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body:JSON.stringify(payload)
+    });
+    const data=await res.json();
+    try{ localStorage.removeItem(PWA_QUEUE_KEY); }catch(e){}
+    G('pwaQueuedBanner').classList.remove('show');
+    if(data.ok){
+      stepperFinish();
+      pwaApplySubmitSuccess(data);
+    }else{
+      /* Сервер ответил и отклонил данные (не сетевая проблема) — очередь
+         очищена (повторять нечего), показываем обычную ошибку. */
+      stepperHide();
+      const errBox=G('sendErr');
+      errBox.textContent=L('SendErr')(data.error||'—');
+      errBox.style.display='block';
+    }
+  }catch(e){
+    /* Сеть пропала снова прямо во время повторной попытки — оставляем
+       заявку в очереди и просто возвращаем баннеру обычный текст;
+       следующая попытка — на следующее событие 'online'. */
+    G('xPwaQueued').textContent=L('Pwa_queued');
+  }
+}
+
+/* При открытии страницы — если с прошлого офлайн-визита осталась
+   неотправленная заявка, показать баннер и, если сеть уже есть,
+   сразу попробовать отправить. */
+requestAnimationFrame(()=>{
+  let raw;
+  try{ raw=localStorage.getItem(PWA_QUEUE_KEY); }catch(e){ raw=null; }
+  if(!raw) return;
+  G('xPwaQueued').textContent=L('Pwa_queued');
+  G('pwaQueuedBanner').classList.add('show');
+  if(navigator.onLine) pwaTryFlushQueue();
+});
+
+/* ══════════════════════════════════════
+   INIT
+══════════════════════════════════════ */
+setLang(lang);
+window.addEventListener('site-language-change',e=>{if(e.detail && e.detail.lang!==lang)setLang(e.detail.lang)});
+window.addEventListener('storage',e=>{if(e.key==='dogovor.language' && window.SiteLanguage && SiteLanguage.get()!==lang)setLang(SiteLanguage.get())});
+showScreen('form');
+/* Задача 10: диплинк со страницы «Мои договора» — contract.html?docId=DOC-...#status */
+try{
+  if(location.hash==='#status'){
+    showScreen('status');
+    const qDoc=new URLSearchParams(location.search).get('docId');
+    if(qDoc) G('stDocId').value=qDoc;
+  }
+}catch(e){}
+try {
+ const saved=JSON.parse(sessionStorage.getItem('dogovor.estimate')||'null');
+ if(saved && Array.isArray(saved.items) && saved.items.length && !location.search.includes('noestimate')) {
+  G('total').value=Number(saved.total)||0; G('paid').value=0; calc();
+  G('tbody').innerHTML='';
+  saved.items.forEach(item=>{addRow();const row=G('tbody').lastElementChild;row.querySelector('.iname').value=item.name;row.querySelector('.qq').value=item.qty;row.querySelector('.pp').value=item.price;let u=row.querySelector('.un');if([...u.options].some(o=>o.value===item.unit))u.value=item.unit;row.querySelector('.pp').dispatchEvent(new Event('input'));});
+  if(saved.language && ['kz','ru','en'].includes(saved.language))setLang(saved.language);
+  sessionStorage.removeItem('dogovor.estimate');
+ }
+} catch(e) { console.warn('Estimate import:',e); }
+/* init pad after DOM renders */
+requestAnimationFrame(()=>{initPad('cCanvas');});
+</script>
+</body>
+</html>
