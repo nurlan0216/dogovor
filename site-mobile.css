@@ -37,7 +37,7 @@ table{max-width:100%}
 @media(max-width:720px){
   .navrow{flex-wrap:wrap;gap:8px}
   .navrow nav{order:3;flex-basis:100%;min-width:0}
-  .navcta{margin-left:auto;flex-wrap:wrap;justify-content:flex-end}
+  .navcta{margin-left:auto;flex-wrap:wrap;justify-content:flex-end;width:100%;max-width:100%}
   .wrap{padding-left:12px;padding-right:12px}
   .card{padding:16px}
   .topbar,.pwaBar,.langbar{flex-wrap:wrap;gap:8px}

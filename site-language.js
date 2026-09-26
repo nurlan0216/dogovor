@@ -101,7 +101,8 @@ pairs.push(
 ['Написать Исполнителю в WhatsApp','Орындаушыға WhatsApp арқылы жазу','Message the Contractor on WhatsApp'],
 ['Очистить историю','Тарихты тазалау','Clear history'],
 ['Удалить всю историю договоров на этом устройстве?','Осы құрылғыдағы барлық шарттар тарихын жоюға келісесіз бе?','Delete all contract history on this device?'],
-['На подписи','Қол қоюда','Awaiting signature']
+['На подписи','Қол қоюда','Awaiting signature'],
+['Чтобы установить: в Safari нажмите «Поделиться», затем «На экран «Домой»».','Орнату үшін: Safari-де «Бөлісу», содан кейін «Негізгі экранға қосу» түймесін басыңыз.','To install: in Safari tap Share, then "Add to Home Screen".']
 );
 const dict={kz:new Map(),en:new Map()};pairs.forEach(([ru,kz,en])=>{dict.kz.set(ru,kz);dict.en.set(ru,en)});
 function get(){try{let l=localStorage.getItem(KEY);return langs.includes(l)?l:'ru'}catch(e){return 'ru'}}

@@ -5,7 +5,16 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Электрика · Видеонаблюдение · IT — мастер в Алматы</title>
 <meta name="description" content="Электромонтаж, видеонаблюдение, настройка интернета, ремонт компьютеров, программирование и сайты. Прайс-лист, расчёт стоимости онлайн, договор онлайн.">
+<!-- ══════ PWA: манифест и иконки — те же файлы, что и на contract.html,
+     чтобы установка приложения работала с любой страницы сайта ══════ -->
+<link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#14171c">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/icon-client-32.png">
+<link rel="apple-touch-icon" href="icons/icon-client-apple-touch-180.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Электромонтаж">
 <style>
 :root{
   --bg:#14171c;--bg2:#0f1115;--surface:#1c2027;--surface2:#242a33;
@@ -55,6 +64,12 @@ nav a{white-space:nowrap;padding:8px 13px;border-radius:20px;font-size:13px;font
   transition:.15s;text-decoration:none}
 nav a:hover{background:var(--surface2);color:var(--text)}
 .navcta{display:flex;gap:8px;flex:none}
+/* ─── PWA: кнопка «Установить приложение» (та же логика, что на contract.html) ─── */
+.pwaInstall{display:none;align-items:center;gap:6px;border:1.5px solid var(--accent);border-radius:20px;
+  padding:5px 14px 5px 12px;color:var(--accent);font-weight:700;font-size:13px;cursor:pointer;background:var(--accent-dim);transition:.15s}
+.pwaInstall:hover{background:var(--accent);color:#08141a}
+.pwaInstall .ic{width:15px;height:15px}
+.pwaInstall.show{display:inline-flex}
 /* ─── BUTTONS ─── */
 button,.btn{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:7px;
   padding:11px 19px;border:0;border-radius:var(--r);cursor:pointer;font-size:13.5px;font-weight:700;
@@ -250,6 +265,7 @@ footer{border-top:1px solid var(--border);padding:34px 0;margin-top:20px;backgro
   <symbol id="i-star" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m12 2 3.1 6.6 7.1.9-5.3 4.9 1.4 7.1L12 17.9l-6.3 3.6 1.4-7.1L1.8 9.5l7.1-.9Z"/></symbol>
   <symbol id="i-doc" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 3h10v18H7Z"/><path stroke-linecap="round" d="M9 8h6M9 12h6M9 16h4"/></symbol>
   <symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="1.5"/><circle cx="8.5" cy="9.5" r="1.6"/><path stroke-linecap="round" stroke-linejoin="round" d="m4 17 5-5 4 4 3-3 4 4"/></symbol>
+  <symbol id="i-install" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="14" rx="1.5"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 21h6M12 6v6m0 0-2.3-2.3M12 12l2.3-2.3"/></symbol>
 </defs>
 </svg>
 
@@ -265,6 +281,7 @@ footer{border-top:1px solid var(--border);padding:34px 0;margin-top:20px;backgro
       <a href="#reviews">Отзывы</a>
     </nav>
     <div class="navcta">
+      <button class="pwaInstall" id="pwaInstallBtn" onclick="pwaInstallClick()"><svg class="ic" viewBox="0 0 24 24"><use href="#i-install"/></svg><span>Установить приложение</span></button>
       <a class="btn bw btnsm" id="navWaBtn" href="#" target="_blank" rel="noopener">
         <svg class="ic" viewBox="0 0 24 24"><use href="#i-chat"/></svg> WhatsApp
       </a>
@@ -484,9 +501,9 @@ footer{border-top:1px solid var(--border);padding:34px 0;margin-top:20px;backgro
 ══════════════════════════════════════════════════════════════ */
 const CONFIG = {
   // Тот же Web App URL, что и в contract.html / admin.html (Code.gs, Этап 3).
-  WEB_APP_URL: 'https://script.google.com/macros/s/AKfycbynXXVVUey4Zrxh24QCKiXY6SLh9JrFVbE1XPYM7_gWFKca2VGH1AU1wakqITeZ7L_R/exec',
+  WEB_APP_URL: 'ВСТАВЬТЕ_URL_APPS_SCRIPT_WEB_APP_СЮДА',
   // Номер WhatsApp Исполнителя, только цифры с кодом страны (без +, пробелов).
-  WA_NUMBER: '77713791787',
+  WA_NUMBER: 'ВСТАВЬТЕ_НОМЕР_НАПРИМЕР_77001234567',
   // Название/бренд, показывается в шапке и подвале.
   SITE_NAME: 'Мастер | Электрика · Видео · IT',
   // Ссылка на страницу договора (contract.html). При выкладке на
@@ -500,7 +517,7 @@ const CONFIG = {
 ══════════════════════════════════════════════════════════════ */
 const PRICE_LIST = [
   { cat: 'Электромонтаж', items: [
-    { name: 'Установка розетки/выключателя', unit: 'шт.', price: 2000 },
+    { name: 'Установка розетки/выключателя', unit: 'шт.', price: 3000 },
     { name: 'Монтаж электрощита (до 12 модулей)', unit: 'компл.', price: 35000 },
     { name: 'Прокладка кабеля скрытая', unit: 'п.м', price: 1200 },
     { name: 'Монтаж светильника/люстры', unit: 'шт.', price: 4000 },
@@ -865,6 +882,56 @@ async function mcRefreshEntry(entry){
     }
   }catch(e){ /* нет сети/сервер недоступен — оставляем сохранённый статус без изменений */ }
 }
+
+/* ══════════════════════════════════════════════════════════════
+   PWA: та же логика установки приложения, что и на contract.html —
+   регистрация service-worker.js + кнопка «Установить приложение»
+   в navbar (раньше была только на contract.html, поэтому установка
+   была недоступна с главной страницы).
+══════════════════════════════════════════════════════════════ */
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('service-worker.js').catch(()=>{});
+  });
+}
+let pwaDeferredPrompt=null;
+function pwaIsStandalone(){
+  return window.matchMedia('(display-mode: standalone)').matches || navigator.standalone===true;
+}
+function pwaIsIOS(){
+  return /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
+}
+function pwaShowToast(text){
+  const t=document.createElement('div');
+  t.textContent=text;
+  t.style.cssText='position:fixed;left:50%;bottom:24px;transform:translateX(-50%);max-width:88vw;'
+    +'background:var(--surface2,#242a33);color:var(--text);border:1px solid var(--border2,#3a4150);'
+    +'border-radius:10px;padding:10px 16px;font-size:13px;box-shadow:0 8px 24px rgba(0,0,0,.4);z-index:2000';
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(),5000);
+}
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault();
+  pwaDeferredPrompt=e;
+  if(!pwaIsStandalone()) G('pwaInstallBtn').classList.add('show');
+});
+window.addEventListener('appinstalled',()=>{
+  pwaDeferredPrompt=null;
+  G('pwaInstallBtn').classList.remove('show');
+});
+async function pwaInstallClick(){
+  if(pwaDeferredPrompt){
+    pwaDeferredPrompt.prompt();
+    try{ await pwaDeferredPrompt.userChoice; }catch(e){}
+    pwaDeferredPrompt=null;
+    G('pwaInstallBtn').classList.remove('show');
+    return;
+  }
+  if(pwaIsIOS()) pwaShowToast(H('Чтобы установить: в Safari нажмите «Поделиться», затем «На экран «Домой»».'));
+}
+requestAnimationFrame(()=>{
+  if(pwaIsIOS() && !pwaIsStandalone()) G('pwaInstallBtn').classList.add('show');
+});
 
 /* ══════════════════════════════════════════════════════════════
    INIT

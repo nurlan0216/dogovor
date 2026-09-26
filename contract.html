@@ -626,7 +626,7 @@ en:{
 /* ══════════════════════════════════════
    BACKEND (Google Apps Script Web App) — Этап 3 ТЗ
 ══════════════════════════════════════ */
-const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbynXXVVUey4Zrxh24QCKiXY6SLh9JrFVbE1XPYM7_gWFKca2VGH1AU1wakqITeZ7L_R/exec';
+const WEB_APP_URL = 'ВСТАВЬТЕ_URL_APPS_SCRIPT_WEB_APP_СЮДА';
 
 let lang=window.SiteLanguage?SiteLanguage.get():'ru';
 function L(k){return(TR[lang]||TR.ru)[k]||(TR.ru[k]||k)}
@@ -1290,7 +1290,9 @@ function goCheckStatus(){
 }
 
 
-/* A click opens a prepared message; browsers cannot silently send SMS/WhatsApp. */
+/* Клик сразу открывает WhatsApp/SMS с готовым сообщением (текст + ссылка
+   на договор) — копировать вручную не нужно, поэтому отдельной кнопки
+   «Скопировать сообщение» больше нет. */
 function renderClientShare(data){
   const box=G(data.status?'statusShare':'shareBox'),url=data.draftUrl||data.signedPdfUrl||'',phone=String(data.ownerWhatsapp||'').replace(/\D/g,'');
   if(!url||!/^https:\/\//.test(url)){box.style.display='none';return;}
@@ -1304,28 +1306,19 @@ function renderClientShare(data){
   box.replaceChildren();box.style.display='flex';
   const file=document.createElement('a');file.className='btn bp';file.textContent=({kz:'Шартты ашу',ru:'Открыть договор',en:'Open contract'})[contractLang];file.href=url;file.target='_blank';file.rel='noopener';box.append(file);
   if(phone){
-   const wa=document.createElement('a');wa.className='btn bw';wa.textContent='WhatsApp →';wa.href=`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;wa.target='_blank';wa.rel='noopener';box.append(wa);
+   const wa=document.createElement('a');wa.className='btn bw';wa.textContent=({kz:'WhatsApp арқылы жазу',ru:'Написать в WhatsApp',en:'Message on WhatsApp'})[contractLang];
+   wa.innerHTML=`<svg class="ic" viewBox="0 0 24 24"><use href="#i-chat"/></svg>${wa.textContent}`;
+   wa.href=`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;wa.target='_blank';wa.rel='noopener';box.append(wa);
    const sms=document.createElement('a');sms.className='btn bs';sms.textContent='SMS →';sms.href=`sms:+${phone}?body=${encodeURIComponent(msg)}`;box.append(sms);
   }
-  const copy=document.createElement('button');copy.className='bs';copy.textContent=({kz:'Хабарламаны көшіру',ru:'Скопировать сообщение',en:'Copy message'})[contractLang];copy.onclick=()=>navigator.clipboard.writeText(msg).then(()=>{copy.textContent='✓';}).catch(()=>{window.prompt('Copy:',msg)});box.append(copy);
 }
 
 /* ══════════════════════════════════════
    КАБИНЕТ КЛИЕНТА: проверка статуса (GET, ТЗ раздел 4)
 ══════════════════════════════════════ */
-/* Задача 8: кнопка WhatsApp «Написать Исполнителю» — показывается на
-   экране статуса, пока договор не подписан. Текст сообщения — на языке
-   клиента (по договору, а не по текущему языку интерфейса). */
-const WA_ASK_MSG={
-  ru:(id,st)=>`Здравствуйте! Мой договор №${id}, статус: ${st}. Прошу уточнить.`,
-  kz:(id,st)=>`Сәлеметсіз бе! Менің шартым №${id}, мәртебесі: ${st}. Нақтылауды сұраймын.`,
-  en:(id,st)=>`Hello! My contract №${id}, status: ${st}. Please advise.`
-};
-const WA_ASK_LABEL={
-  ru:'Написать Исполнителю в WhatsApp',
-  kz:'Орындаушыға WhatsApp арқылы жазу',
-  en:'Message the Contractor on WhatsApp'
-};
+/* Задача 8: кнопка WhatsApp на экране статуса, пока договор не подписан —
+   строится в renderClientShare() (готовое сообщение: текст + ссылка на
+   договор), см. ниже. */
 async function checkStatus(){
   const id=(G('stDocId').value||'').trim();
   const ph4=(G('stPhone4').value||'').trim();
@@ -1363,24 +1356,13 @@ async function checkStatus(){
     if(data.sentAt) html+=`${xe(L('ST_sentAt'))} ${xe(data.sentAt)}<br>`;
     if(data.signedAt) html+=`${xe(L('ST_signedAt'))} ${xe(data.signedAt)}<br>`;
     html+='</div>';
-    if(data.draftPdfUrl && data.status!=='Подписан'){
-      html+=`<div class="brow"><a class="bp" href="${xe(data.draftPdfUrl)}" target="_blank" rel="noopener">${xe(({kz:'Шарт жобасын ашу',ru:'Открыть черновик',en:'Open draft'})[lang])}</a></div>`;
-    }
     if(data.status==='Подписан'&&data.signedPdfUrl){
       html+=`<div class="brow"><a class="bp" style="text-decoration:none" href="${xe(data.signedPdfUrl)}" target="_blank" rel="noopener">`+
             `<svg class="ic" viewBox="0 0 24 24"><use href="#i-download"/></svg>${xe(L('ST_dl'))}</a></div>`;
     }
-    /* Задача 8: кнопка WhatsApp — пока Исполнитель не подписал договор */
-    if(data.status!=='Подписан'){
-      const waPhone=String(data.ownerWhatsapp||'').replace(/\D/g,'');
-      if(waPhone){
-        const waLang=['kz','ru','en'].includes(data.language)?data.language:lang;
-        const waMsg=(WA_ASK_MSG[waLang]||WA_ASK_MSG.ru)(data.docId,statusLabel);
-        const waLbl=WA_ASK_LABEL[waLang]||WA_ASK_LABEL.ru;
-        html+=`<div class="brow"><a class="bw" href="https://wa.me/${waPhone}?text=${encodeURIComponent(waMsg)}" target="_blank" rel="noopener">`+
-              `<svg class="ic" viewBox="0 0 24 24"><use href="#i-chat"/></svg>${xe(waLbl)}</a></div>`;
-      }
-    }
+    /* Задача 8: пока договор не подписан — вместо отдельной кнопки «Открыть
+       черновик» показываем кнопку WhatsApp с готовым сообщением (текст +
+       ссылка на черновик договора). Одна кнопка вместо двух похожих. */
     box.innerHTML=html;
     if(data.draftPdfUrl || data.signedPdfUrl) renderClientShare({...data,draftUrl:data.status==='Подписан'?'':data.draftPdfUrl});
   }catch(e){
